@@ -1,28 +1,28 @@
-// KELİME OYUNU MANTIĞI: Yeni ve daha geniş kelime havuzu
+// KELİME OYUNU MANTIĞI: Genişletilmiş kelime havuzu
 function checkInstagramBrowser() {
     const isInstagramBrowser = /Instagram/i.test(navigator.userAgent);
     if (isInstagramBrowser) {
-        alert("DİKKAT! Sesli okumada sorun yaşayabilirsiniz. Lütfen oyunu harici bir tarayıcıda (Chrome/Safari) açın.");
+        console.warn("Instagram Tarayıcısı algılandı. Sesli okumada sorun olabilir.");
     }
 }
 checkInstagramBrowser();
 
 const ALL_WORD_STAGES = [
-    // --- TEMEL SEVİYE AŞAMA 1 (Basit Kelimeler) ---
+    // Aşama 1 (Temel)
     [{ ar: 'مرحبا', tr: 'Merhaba' }, { ar: 'شكراً', tr: 'Teşekkürler' }, { ar: 'نعم', tr: 'Evet' }, { ar: 'البيت', tr: 'Ev' }],
-    // --- TEMEL SEVİYE AŞAMA 2 (Fiiller) ---
+    // Aşama 2 (Fiiller)
     [{ ar: 'شاهد', tr: 'İzledi' }, { ar: 'قرأ', tr: 'Okudu' }, { ar: 'طبخ', tr: 'Pişirdi' }, { ar: 'كتب', tr: 'Yazdı' }],
-    // --- ORTA SEVİYE AŞAMA 3 (Sıfatlar) ---
+    // Aşama 3 (Sıfatlar)
     [{ ar: 'سريع', tr: 'Hızlı' }, { ar: 'جديد', tr: 'Yeni' }, { ar: 'صحيح', tr: 'Doğru' }, { ar: 'كبير', tr: 'Büyük' }],
-    // --- ORTA SEVİYE AŞAMA 4 (Mekan İsimleri) ---
+    // Aşama 4 (Mekanlar)
     [{ ar: 'المدينة', tr: 'Şehir' }, { ar: 'المكتبة', tr: 'Kütüphane' }, { ar: 'الجامعة', tr: 'Üniversite' }, { ar: 'العمل', tr: 'İş' }],
-    // --- İLERİ SEVİYE AŞAMA 5 (Soyut Kavramlar) ---
+    // Aşama 5 (Soyut)
     [{ ar: 'التفكير', tr: 'Düşünme' }, { ar: 'القراءة', tr: 'Okuma (isim)' }, { ar: 'السفر', tr: 'Seyahat (isim)' }, { ar: 'الحرية', tr: 'Özgürlük' }],
-    // --- İLERİ SEVİYE AŞAMA 6 (Daha Zor Fiiller) ---
+    // Aşama 6 (Zor Fiiller)
     [{ ar: 'ساعد', tr: 'Yardım etti' }, { ar: 'نسي', tr: 'Unuttu' }, { ar: 'سأل', tr: 'Sordu' }, { ar: 'تذكر', tr: 'Hatırladı' }],
-    // --- UZMAN SEVİYE AŞAMA 7 (Zor Sıfatlar) ---
+    // Aşama 7 (Zor Sıfatlar)
     [{ ar: 'مختلف', tr: 'Farklı' }, { ar: 'مهم', tr: 'Önemli' }, { ar: 'متعب', tr: 'Yorgun' }, { ar: 'سعيد', tr: 'Mutlu' }],
-    // --- UZMAN SEVİYE AŞAMA 8 (Çeşitli) ---
+    // Aşama 8 (Çeşitli)
     [{ ar: 'الصباح', tr: 'Sabah' }, { ar: 'المساء', tr: 'Akşam' }, { ar: 'الطريق', tr: 'Yol' }, { ar: 'القهوة', tr: 'Kahve' }],
 ];
 
@@ -42,6 +42,8 @@ function speak(text, lang) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
     utterance.onend = () => { isSpeaking = false; };
+    // Mevcut konuşmayı durdur ve yenisini başlat (ses bug'ını çözer)
+    speechSynthesis.cancel(); 
     speechSynthesis.speak(utterance);
 }
 
@@ -112,7 +114,6 @@ function checkForMatch() {
                 }, 1500);
             } else {
                 setTimeout(() => {
-                    // Kelime aşaması bitince cümle oyununa yönlendir
                     alert('MUHTEŞEM! Tüm Kelime Seviyeleri bitti. Şimdi Cümle Eşleştirme başlıyor!');
                     window.location.href = 'cumle.html'; 
                 }, 1500);
