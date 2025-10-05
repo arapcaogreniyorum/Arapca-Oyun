@@ -1,93 +1,170 @@
+/* style.css - GÜNCELLENMİŞ VERSİYON */
+
+:root {
+    /* Ana Renk Paleti */
+    --primary-blue: #007bff; /* Bağlantılar ve Önemli Butonlar */
+    --secondary-orange: #ff9800; /* Vurgu ve Uyarı */
+    --success-green: #4CAF50; /* Kart Kapalı/Doğru */
+    --light-bg: #f8f9fa; /* Açık Gri Arka Plan */
+    --dark-text: #343a40; /* Koyu Yazı */
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Yumuşak Gölgelendirme */
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f4f4f9; 
+    background-color: var(--light-bg); 
     margin: 0;
-    padding: 20px;
+    padding: 20px 10px; /* Kenarlarda boşluk bırak */
+    min-height: 100vh;
+    color: var(--dark-text);
 }
 
 header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
 h1 {
-    color: #007bff; 
+    color: var(--primary-blue); 
+    font-size: 2.5rem; /* Başlık boyutunu büyüt */
+    margin-bottom: 10px;
 }
 
-.score-board {
-    margin-bottom: 15px;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #333;
+p {
+    color: #6c757d;
+    font-size: 1.1rem;
 }
+
+/* --- ANA MENÜ BUTONLARI VE GENEL BTN STİLİ --- */
+
+/* index.html'deki menu-button ve oyun HTML'lerindeki menüye dön butonlarını etkiler */
+.menu-button, #check-button, #speaker-button, .type-button, .choice-button {
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.menu-button:hover, 
+#check-button:hover, 
+#speaker-button:hover,
+.type-button:hover,
+.choice-button:hover {
+    transform: translateY(-2px); /* Hafif yukarı kalkma efekti */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* --- OYUN ALANI KAPSAYICILARI --- */
+
+.game-container, 
+.type-game-container, 
+.fill-game-container, 
+.listen-game-container {
+    background-color: #ffffff;
+    border-radius: 15px; /* Daha yuvarlak köşeler */
+    box-shadow: var(--card-shadow);
+    padding: 30px;
+    width: 90%;
+    max-width: 800px; /* Daha geniş alan */
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+
+/* --- EŞLEŞTİRME OYUNU KARTLARI (KELİME & CÜMLE) --- */
 
 .game-container {
-    display: grid;
-    /* Varsayılan 4 sütunlu kelime düzeni */
-    grid-template-columns: repeat(4, 100px); 
-    gap: 10px;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    /* 5 veya 6 kartlık yatay düzeni desteklemek için responsive grid */
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+    gap: 15px; /* Daha geniş boşluk */
 }
 
 .card {
-    width: 100px;
-    height: 100px;
-    background-color: #4CAF50; 
+    /* Kart boyutlarını büyüt */
+    width: 100%;
+    min-width: 120px;
+    height: 120px; 
+    
+    background-color: var(--success-green); /* Kartın kapalı rengi */
     color: white;
-    font-size: 24px; 
+    font-size: 20px; 
+    font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    border-radius: 8px;
-    perspective: 1000px; 
-    transition: transform 0.5s;
-    /* Arapça metin için RTL (sağdan sola) */
-    direction: rtl; 
+    border-radius: 12px;
+    perspective: 1000px;
+    transition: all 0.5s ease;
     text-align: center;
+    padding: 5px;
 }
 
 /* Kart Açık Durumdayken */
 .card.flipped {
     background-color: #ffffff; 
-    color: #333; 
-    transform: rotateY(180deg); 
-    pointer-events: none; 
+    color: var(--dark-text); 
+    border: 3px solid var(--primary-blue); /* Mavi çerçeve */
+    box-shadow: var(--card-shadow);
+    transform: scale(1.05); /* Açıkken hafif büyüt */
+    font-size: 22px; 
 }
 
-/* Kart Eşleşmiş Durumdayken */
+/* Kart Eşleştiğinde */
 .card.matched {
-    background-color: #ffc107; 
-    color: white;
-    pointer-events: none;
-    animation: pulse 1s infinite;
+    background-color: #d4edda; /* Soluk yeşil eşleşme rengi */
+    color: var(--success-green); 
+    cursor: default;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.7); /* Parlak yeşil ışık */
+    animation: pulse 1s ease-in-out;
 }
 
-/* CÜMLE MODU İÇİN ÖZEL STİL (Sadece cumle.html'de kullanılacak) */
-
-.game-container.sentence-mode {
-    /* 2 sütunlu, daha geniş kartlar */
-    grid-template-columns: repeat(2, 250px); 
-}
-
-.game-container.sentence-mode .card {
-    width: 250px; 
-    height: 90px; 
+/* Cümle Eşleştirme Modu İçin Daha Küçük Yazı */
+.game-container .card[data-lang="tr-TR"] {
     font-size: 16px; 
-    padding: 10px; 
-    white-space: normal; /* Metnin aşağı kaymasını sağla */
+}
+.game-container .card[data-lang="ar-SA"] {
+    font-size: 24px;
 }
 
 
-/* Eşleşme Animasyonu */
+/* --- SCORE BOARD (Puan Panosu) --- */
+
+.score-board {
+    margin-top: 20px;
+    padding: 15px 30px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    font-size: 1.1rem;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.score-board span {
+    font-weight: bold;
+    color: var(--primary-blue);
+    font-size: 1.2rem;
+}
+
+/* --- ANİMASYON --- */
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+}
+
+/* --- INPUT VE FEEDBACK STİLLERİ (Tüm Oyunlar İçin Ortak) --- */
+
+#user-input {
+    border: 2px solid var(--primary-blue) !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#feedback {
+    min-height: 30px;
+    font-size: 1.5rem;
+    margin-top: 25px;
 }
