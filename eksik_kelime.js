@@ -1,9 +1,35 @@
+// EKSİK KELİMEYİ BUL MANTIĞI: Arapça Boşluk Doldurma
 const SENTENCE_DATA = [
-    { tr_template: 'Ben her gün [BOŞLUK] içerim.', dogru_kelime: 'Kahve', yanlis_secenekler: ['Araba', 'Okul', 'Ayakkabı'], ar: 'أنا أشرب القهوة كل يوم' },
-    { tr_template: 'Yarın [BOŞLUK] gitmek zorundayım.', dogru_kelime: 'İşe', yanlis_secenekler: ['Yeşil', 'Koşmak', 'Yemek'], ar: 'يجب أن أذهب إلى العمل غداً' },
-    { tr_template: 'Bu çok [BOŞLUK] bir gün!', dogru_kelime: 'Güzel', yanlis_secenekler: ['Kitap', 'Gitmek', 'Çay'], ar: 'هذا يوم جميل جداً!' },
-    { tr_template: '[BOŞLUK] kapının önünde duruyor.', dogru_kelime: 'Araba', yanlis_secenekler: ['Uyku', 'Yazmak', 'Hava'], ar: 'السيارة تقف أمام الباب' },
-    { tr_template: 'Akşam yemeği için [BOŞLUK] pişireceğim.', dogru_kelime: 'Balık', yanlis_secenekler: ['Mavi', 'Uyku', 'Hızlı'], ar: 'سأقوم بطهي السمك لتناول العشاء' },
+    { 
+        ar_template: 'الطالب يقرأ [BOŞLUK] في المكتبة.', 
+        dogru_kelime: 'كتاباً',
+        yanlis_secenekler: ['سيارة', 'كبير', 'شرب'],
+        tr_translation: 'Öğrenci kütüphanede kitap okuyor.'
+    },
+    { 
+        ar_template: 'هذا المنزل [BOŞLUK] جداً.', 
+        dogru_kelime: 'جديد',
+        yanlis_secenekler: ['المعلم', 'الجامعة', 'طبخ'],
+        tr_translation: 'Bu ev çok yenidir.'
+    },
+    { 
+        ar_template: 'نحن نحتاج إلى [BOŞLUK] لحل المشكلة.', 
+        dogru_kelime: 'التفكير',
+        yanlis_secenekler: ['السفر', 'العمل', 'ساعد'],
+        tr_translation: 'Problemi çözmek için düşünmeye ihtiyacımız var.'
+    },
+    { 
+        ar_template: 'هل [BOŞLUK] المسلسل الجديد؟', 
+        dogru_kelime: 'شاهدت',
+        yanlis_secenekler: ['المدينة', 'مهم', 'صحيح'],
+        tr_translation: 'Yeni diziyi izledin mi?'
+    },
+    { 
+        ar_template: 'ذهبت إلى [BOŞLUK] لشراء القهوة.', 
+        dogru_kelime: 'المتجر',
+        yanlis_secenekler: ['كتب', 'مختلف', 'صغير'],
+        tr_translation: 'Kahve almak için mağazaya gittim.'
+    },
 ];
 
 const sentenceDisplay = document.getElementById('sentence-display');
@@ -34,7 +60,8 @@ function nextSentence() {
     const randomIndex = Math.floor(Math.random() * SENTENCE_DATA.length);
     currentSentence = SENTENCE_DATA[randomIndex];
 
-    const formattedSentence = currentSentence.tr_template.replace('[BOŞLUK]', '<span class="blank-space">...</span>');
+    // Arapça template'i kullan ve boşluk alanını göster
+    const formattedSentence = currentSentence.ar_template.replace('[BOŞLUK]', '<span class="blank-space">_____</span>');
     sentenceDisplay.innerHTML = formattedSentence;
     translationDisplay.textContent = '';
 
@@ -51,25 +78,34 @@ function nextSentence() {
 
 function checkAnswer(selectedWord) {
     const isCorrect = (selectedWord === currentSentence.dogru_kelime);
+    
     choiceButtons.forEach(button => button.disabled = true);
 
     if (isCorrect) {
         correctScore++;
         correctScoreDisplay.textContent = correctScore;
-        const completedSentence = currentSentence.tr_template.replace('[BOŞLUK]', `<span style="color:green;">${selectedWord}</span>`);
+        
+        // Cümleyi Arapça doğru kelime ile tamamla
+        const completedSentence = currentSentence.ar_template.replace('[BOŞLUK]', `<span style="color:green; font-weight: bold;">${selectedWord}</span>`);
         sentenceDisplay.innerHTML = completedSentence;
-        translationDisplay.textContent = `Doğru! Arapçası: ${currentSentence.ar}`;
-        speak(currentSentence.ar, 'ar-SA');
+        
+        translationDisplay.textContent = `Doğru! Türkçe Çeviri: ${currentSentence.tr_translation}`;
+        speak(currentSentence.ar_template.replace('[BOŞLUK]', selectedWord), 'ar-SA');
+        
     } else {
         wrongScore++;
         wrongScoreDisplay.textContent = wrongScore;
+        
         choiceButtons.forEach(button => {
             if (button.textContent === selectedWord) {
                 button.style.backgroundColor = 'red';
             }
         });
-        translationDisplay.textContent = `Yanlış! Doğru kelime: ${currentSentence.dogru_kelime}. Arapçası: ${currentSentence.ar}`;
+        
+        translationDisplay.textContent = `Yanlış! Doğru kelime: ${currentSentence.dogru_kelime}. Türkçe: ${currentSentence.tr_translation}`;
     }
-    setTimeout(nextSentence, 2500);
+
+    setTimeout(nextSentence, 3000); // 3 saniye sonra yeni soru
 }
+
 nextSentence();
