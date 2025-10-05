@@ -13,44 +13,44 @@ function checkInstagramBrowser() {
 checkInstagramBrowser();
 
 
-// 1. TÜM KELİME ÇİFTLERİ VE AŞAMALANDIRMA (TEMEL, ORTA ve İLERİ SEVİYE)
+// 1. TÜM KELİME ÇİFTLERİ VE AŞAMALANDIRMA (Orta ve İleri Seviye dahil)
 const ALL_WORD_STAGES = [
-    // --- TEMEL SEVİYE AŞAMA 1: Selamlaşma ve Temel Kavramlar ---
+    // --- TEMEL SEVİYE AŞAMA 1 ---
     [
         { ar: 'مرحبا', tr: 'Merhaba' },
         { ar: 'شكراً', tr: 'Teşekkürler' },
         { ar: 'نعم', tr: 'Evet' },
         { ar: 'لا', tr: 'Hayır' },
     ],
-    // --- TEMEL SEVİYE AŞAMA 2: Ortak İsimler ---
+    // --- TEMEL SEVİYE AŞAMA 2 ---
     [
         { ar: 'الماء', tr: 'Su' },
         { ar: 'طعام', tr: 'Yemek' },
         { ar: 'بيت', tr: 'Ev' },
         { ar: 'سيارة', tr: 'Araba' },
     ],
-    // --- ORTA SEVİYE AŞAMA 3: Fiiller (Mazi) ---
+    // --- ORTA SEVİYE AŞAMA 3 ---
     [
         { ar: 'كتب', tr: 'Yazdı' },
         { ar: 'ذهب', tr: 'Gitti' },
         { ar: 'شرب', tr: 'İçti' },
         { ar: 'قرأ', tr: 'Okudu' },
     ],
-    // --- ORTA SEVİYE AŞAMA 4: Sıfatlar ve Zıtlıklar ---
+    // --- ORTA SEVİYE AŞAMA 4 ---
     [
         { ar: 'كبير', tr: 'Büyük' },
         { ar: 'صغير', tr: 'Küçük' },
         { ar: 'جميل', tr: 'Güzel' },
         { ar: 'قبيح', tr: 'Çirkin' },
     ],
-    // --- İLERİ SEVİYE AŞAMA 5: Soyut Kavramlar ---
+    // --- İLERİ SEVİYE AŞAMA 5 ---
     [
         { ar: 'الحرية', tr: 'Özgürlük' },
         { ar: 'الثقافة', tr: 'Kültür' },
         { ar: 'العدالة', tr: 'Adalet' },
         { ar: 'التحدي', tr: 'Zorluk' },
     ],
-    // --- İLERİ SEVİYE AŞAMA 6: Edatlar ve Bağlaçlar ---
+    // --- İLERİ SEVİYE AŞAMA 6 ---
     [
         { ar: 'حول', tr: 'Etrafında' },
         { ar: 'لأن', tr: 'Çünkü' },
@@ -71,11 +71,24 @@ let flippedCards = [];
 let isBoardLocked = false; 
 let matchedPairs = 0; 
 
+// YENİ DEĞİŞKEN: Ses çalınıyor mu kontrolü
+let isSpeaking = false; 
+
 // SESLENDİRME FONKSİYONU
 function speak(text, lang) {
     if (!('speechSynthesis' in window)) return;
+    
+    // Ses çalmaya başlamadan önce 'isSpeaking' true yapılır
+    isSpeaking = true; 
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
+    
+    // Ses bittiğinde 'isSpeaking' false yapılır
+    utterance.onend = () => {
+        isSpeaking = false;
+    };
+    
     speechSynthesis.speak(utterance);
 }
 
@@ -89,7 +102,6 @@ function shuffle(array) {
 // KARTLARI OLUŞTURMA
 function createBoard() {
     gameContainer.innerHTML = ''; 
-
     gameContainer.classList.remove('sentence-mode'); 
 
     const wordPairs = ALL_WORD_STAGES[currentStage];
@@ -120,9 +132,12 @@ function createBoard() {
     });
 }
 
-// KART ÇEVİRME İŞLEMİ
+// KART ÇEVİRME İŞLEMİ (isSpeaking kontrolü eklendi)
 function flipCard() {
-    if (isBoardLocked || this.classList.contains('flipped') || this.classList.contains('matched')) return;
+    // Ses çalarken veya tahta kilitliyken tıklamayı engelle
+    if (isBoardLocked || this.classList.contains('flipped') || this.classList.contains('matched') || isSpeaking) {
+        return;
+    }
 
     this.textContent = this.dataset.content;
     this.classList.add('flipped');
@@ -136,12 +151,11 @@ function flipCard() {
     }
 }
 
-// EŞLEŞME KONTROLÜ VE AŞAMA İLERLEMESİ
+// EŞLEŞME KONTROLÜ VE AŞAMA İLERLEMESİ (Aynı kaldı)
 function checkForMatch() {
     const [card1, card2] = flippedCards;
 
     if (card1.dataset.type === card2.dataset.type) {
-        // Eşleşti
         card1.classList.add('matched');
         card2.classList.add('matched');
         card1.classList.remove('flipped');
@@ -150,18 +164,15 @@ function checkForMatch() {
         matchedPairs++;
         matchedPairsDisplay.textContent = matchedPairs;
 
-        // AŞAMA TAMAMLANDI MI?
         if (matchedPairs === (currentStageWords.length / 2)) {
             
             if (currentStage < ALL_WORD_STAGES.length - 1) {
-                // Sonraki kelime aşamasına geç
                 currentStage++;
                 setTimeout(() => {
                     alert(`Tebrikler! ${currentStage + 1}. Kelime Aşamasına geçiliyor.`);
                     createBoard(); 
                 }, 1500);
             } else {
-                // TÜM KELİME AŞAMALARI BİTTİ -> Cümle sayfasına yönlendir
                 setTimeout(() => {
                     alert('MUHTEŞEM! Tüm Kelime Seviyeleri bitti. Şimdi Cümle Eşleştirme başlıyor!');
                     window.location.href = 'cumle.html'; 
@@ -171,7 +182,6 @@ function checkForMatch() {
         resetBoard(); 
 
     } else {
-        // Eşleşmedi
         setTimeout(() => {
             card1.classList.remove('flipped');
             card2.classList.remove('flipped');
