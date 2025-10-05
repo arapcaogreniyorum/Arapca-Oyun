@@ -6,11 +6,32 @@
     <title>Kelime Tipi Avcısı (Gramer Refleksi)</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .type-game-container { display: flex; flex-direction: column; align-items: center; padding: 30px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); width: 90%; max-width: 400px; }
-        #word-display { font-size: 48px; font-weight: bold; color: #ff9800; margin-bottom: 40px; min-height: 60px; }
-        .type-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
-        .type-button { padding: 15px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s; }
-        .type-button:hover { background-color: #0056b3; }
+        /* CSS dosyasında olmayan bu oyuna özgü layout'u koruyoruz */
+        .type-game-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 90%; 
+            max-width: 400px; 
+        }
+        #word-display { 
+            font-size: 48px; 
+            font-weight: bold; 
+            color: var(--secondary-orange); 
+            margin-bottom: 40px; 
+            min-height: 60px; 
+        }
+        .type-options { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+            width: 100%; 
+        }
+        .type-button { 
+            padding: 18px 10px; 
+            font-size: 18px; 
+            background-color: var(--primary-blue); 
+        }
     </style>
 </head>
 <body>
