@@ -1,44 +1,43 @@
 // CÜMLE OYUNU MANTIK DOSYASI
-// Bu dosya, ana kelime oyunu bittikten sonra yönlendirilen sayfayı yönetir.
 
 // 1. CÜMLE AŞAMALARI (TEMEL, ORTA ve İLERİ SEVİYE)
 const ALL_WORD_STAGES = [
-    // --- TEMEL CÜMLE AŞAMASI 1: Günlük Konuşma ---
+    // --- TEMEL CÜMLE AŞAMASI 1 ---
     [
         { ar: 'أريد كوب قهوة', tr: 'Bir fincan kahve istiyorum' },
         { ar: 'كم سعر هذا؟', tr: 'Bunun fiyatı ne kadar?' },
         { ar: 'أين الحمام؟', tr: 'Banyo nerede?' },
         { ar: 'لا أفهم', tr: 'Anlamıyorum' },
     ],
-    // --- TEMEL CÜMLE AŞAMASI 2: Temel Fiil Kullanımı ---
+    // --- TEMEL CÜMLE AŞAMASI 2 ---
     [
         { ar: 'هل أنت بخير؟', tr: 'İyi misin?' },
         { ar: 'نحن ذاهبون الآن', tr: 'Biz şimdi gidiyoruz' },
         { ar: 'أنا أقرأ كتاباً', tr: 'Ben bir kitap okuyorum' },
         { ar: 'مع السلامة', tr: 'Güle güle' },
     ],
-    // --- ORTA CÜMLE AŞAMASI 3: Gelecek Zaman ve İhtiyaç ---
+    // --- ORTA CÜMLE AŞAMASI 3 ---
     [
         { ar: 'سأذهب إلى السوق غداً', tr: 'Yarın markete gideceğim' },
         { ar: 'يجب أن ندرس أكثر', tr: 'Daha çok ders çalışmalıyız' },
         { ar: 'أبحث عن وظيفة جديدة', tr: 'Yeni bir iş arıyorum' },
         { ar: 'ما رأيك في هذا؟', tr: 'Bu konuda ne düşünüyorsun?' },
     ],
-    // --- ORTA CÜMLE AŞAMASI 4: Edatlı İfadeler ---
+    // --- ORTA CÜMLE AŞAMASI 4 ---
     [
         { ar: 'القطة على الطاولة', tr: 'Kedi masanın üzerinde' },
         { ar: 'تحدثت مع صديقي', tr: 'Arkadaşımla konuştum' },
         { ar: 'أفكر في المستقبل', tr: 'Geleceği düşünüyorum' },
         { ar: 'الاجتماع يبدأ قريباً', tr: 'Toplantı yakında başlıyor' },
     ],
-    // --- İLERİ CÜMLE AŞAMASI 5: Şart Cümleleri (Eğer/Şayet) ---
+    // --- İLERİ CÜMLE AŞAMASI 5 ---
     [
         { ar: 'إذا درست، ستنجح', tr: 'Eğer çalışırsan, başarılı olursun' },
         { ar: 'لو كنت أعرف، لكنت أخبرتك', tr: 'Bilseydim, sana söylerdim' },
-        { ar: 'أنا مقتنع بأن هذا صحيح', tr: 'Bunun doğru olduğuna ikna oldum' },
+        { ar: 'أنا م اقتنع بأن هذا صحيح', tr: 'Bunun doğru olduğuna ikna oldum' },
         { ar: 'ليس كل ما يلمع ذهباً', tr: 'Parlayan her şey altın değildir' },
     ],
-    // --- İLERİ CÜMLE AŞAMASI 6: Mastar ve Bağlaç Kullanımı ---
+    // --- İLERİ CÜMLE AŞAMASI 6 ---
     [
         { ar: 'هدفي هو تعلم اللغة', tr: 'Hedefim dili öğrenmek' },
         { ar: 'بسبب المطر، ألغينا الرحلة', tr: 'Yağmur nedeniyle geziyi iptal ettik' },
@@ -58,12 +57,21 @@ const stageDisplay = document.getElementById('current-stage');
 let flippedCards = []; 
 let isBoardLocked = false; 
 let matchedPairs = 0; 
+let isSpeaking = false; // Yeni değişken
 
 // SESLENDİRME FONKSİYONU
 function speak(text, lang) {
     if (!('speechSynthesis' in window)) return;
+    
+    isSpeaking = true; 
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
+    
+    utterance.onend = () => {
+        isSpeaking = false;
+    };
+    
     speechSynthesis.speak(utterance);
 }
 
@@ -78,7 +86,6 @@ function shuffle(array) {
 function createBoard() {
     gameContainer.innerHTML = ''; 
 
-    // Cümle modu CSS'i burada gerekli
     if (!gameContainer.classList.contains('sentence-mode')) {
         gameContainer.classList.add('sentence-mode');
     }
@@ -111,9 +118,10 @@ function createBoard() {
     });
 }
 
-// KART ÇEVİRME İŞLEMİ
+// KART ÇEVİRME İŞLEMİ (isSpeaking kontrolü eklendi)
 function flipCard() {
-    if (isBoardLocked || this.classList.contains('flipped') || this.classList.contains('matched')) return;
+    // Ses çalarken veya tahta kilitliyken tıklamayı engelle
+    if (isBoardLocked || this.classList.contains('flipped') || this.classList.contains('matched') || isSpeaking) return;
 
     this.textContent = this.dataset.content;
     this.classList.add('flipped');
@@ -127,12 +135,11 @@ function flipCard() {
     }
 }
 
-// EŞLEŞME KONTROLÜ
+// EŞLEŞME KONTROLÜ (Geri kalanı aynı kaldı)
 function checkForMatch() {
     const [card1, card2] = flippedCards;
 
     if (card1.dataset.type === card2.dataset.type) {
-        // Eşleşti
         card1.classList.add('matched');
         card2.classList.add('matched');
         card1.classList.remove('flipped');
@@ -141,18 +148,15 @@ function checkForMatch() {
         matchedPairs++;
         matchedPairsDisplay.textContent = matchedPairs;
 
-        // AŞAMA TAMAMLANDI MI?
         if (matchedPairs === (currentStageWords.length / 2)) {
             
             if (currentStage < ALL_WORD_STAGES.length - 1) {
-                // Sonraki cümle aşamasına geç
                 currentStage++;
                 setTimeout(() => {
                     alert(`Tebrikler! ${currentStage + 1}. Cümle Aşamasına geçiliyor.`);
                     createBoard(); 
                 }, 1500);
             } else {
-                // TÜM CÜMLE AŞAMALARI BİTTİ -> Bitiş Ekranı göster
                 setTimeout(() => {
                     alert('TEBRİKLER! Arapça eğitiminin tamamını başarıyla bitirdiniz!');
                     showFinishScreen();
@@ -162,7 +166,6 @@ function checkForMatch() {
         resetBoard(); 
 
     } else {
-        // Eşleşmedi
         setTimeout(() => {
             card1.classList.remove('flipped');
             card2.classList.remove('flipped');
