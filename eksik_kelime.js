@@ -3,7 +3,7 @@ const SENTENCE_DATA = [
     { 
         ar_template: 'الطالب يقرأ [BOŞLUK] في المكتبة.', 
         dogru_kelime: 'كتاباً',
-        yanlis_secenekler: ['سيارة', 'كبير', 'شرب'],
+        yanlis_secenekler: ['سيارة', 'شرب', 'سريع'],
         tr_translation: 'Öğrenci kütüphanede kitap okuyor.'
     },
     { 
@@ -30,6 +30,12 @@ const SENTENCE_DATA = [
         yanlis_secenekler: ['كتب', 'مختلف', 'صغير'],
         tr_translation: 'Kahve almak için mağazaya gittim.'
     },
+    { 
+        ar_template: 'المطر يمنعنا من [BOŞLUK] اليوم.', 
+        dogru_kelime: 'الخروج',
+        yanlis_secenekler: ['السعيد', 'الصباح', 'الدفتر'],
+        tr_translation: 'Yağmur bugün dışarı çıkmamızı engelliyor.'
+    },
 ];
 
 const sentenceDisplay = document.getElementById('sentence-display');
@@ -53,6 +59,7 @@ function speak(text, lang = 'ar-SA') {
     if (!('speechSynthesis' in window)) return;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
+    speechSynthesis.cancel();
     speechSynthesis.speak(utterance);
 }
 
@@ -72,7 +79,7 @@ function nextSentence() {
         button.textContent = choices[index];
         button.onclick = () => checkAnswer(button.textContent);
         button.disabled = false;
-        button.style.backgroundColor = '#4CAF50';
+        button.style.backgroundColor = 'var(--success-green)'; 
     });
 }
 
@@ -86,7 +93,7 @@ function checkAnswer(selectedWord) {
         correctScoreDisplay.textContent = correctScore;
         
         // Cümleyi Arapça doğru kelime ile tamamla
-        const completedSentence = currentSentence.ar_template.replace('[BOŞLUK]', `<span style="color:green; font-weight: bold;">${selectedWord}</span>`);
+        const completedSentence = currentSentence.ar_template.replace('[BOŞLUK]', `<span style="color:var(--primary-blue); font-weight: bold;">${selectedWord}</span>`);
         sentenceDisplay.innerHTML = completedSentence;
         
         translationDisplay.textContent = `Doğru! Türkçe Çeviri: ${currentSentence.tr_translation}`;
@@ -105,7 +112,7 @@ function checkAnswer(selectedWord) {
         translationDisplay.textContent = `Yanlış! Doğru kelime: ${currentSentence.dogru_kelime}. Türkçe: ${currentSentence.tr_translation}`;
     }
 
-    setTimeout(nextSentence, 3000); // 3 saniye sonra yeni soru
+    setTimeout(nextSentence, 3000); 
 }
 
 nextSentence();
