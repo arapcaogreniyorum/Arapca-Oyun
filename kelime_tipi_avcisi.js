@@ -1,8 +1,23 @@
+// KELİME TİPİ AVCISI MANTIĞI: Daha fazla İsim, Fiil, Sıfat
 const WORD_TYPES_DATA = [
-    { ar: 'كتاب', tip: 'ISIM', tr: 'Kitap' }, { ar: 'ذهب', tip: 'FIIL', tr: 'Gitti' }, { ar: 'كبير', tip: 'SIFAT', tr: 'Büyük' },
-    { ar: 'سيارة', tip: 'ISIM', tr: 'Araba' }, { ar: 'أكل', tip: 'FIIL', tr: 'Yedi' }, { ar: 'جميل', tip: 'SIFAT', tr: 'Güzel' },
-    { ar: 'مدرسة', tip: 'ISIM', tr: 'Okul' }, { ar: 'شرب', tip: 'FIIL', tr: 'İçti' }, { ar: 'صغير', tip: 'SIFAT', tr: 'Küçük' },
-    { ar: 'طويل', tip: 'SIFAT', tr: 'Uzun' }, { ar: 'درس', tip: 'FIIL', tr: 'Ders Çalıştı' }, { ar: 'باب', tip: 'ISIM', tr: 'Kapı' },
+    { ar: 'المعلم', tip: 'ISIM', tr: 'Öğretmen' },
+    { ar: 'شاهد', tip: 'FIIL', tr: 'İzledi' },
+    { ar: 'سريع', tip: 'SIFAT', tr: 'Hızlı' },
+    { ar: 'المدينة', tip: 'ISIM', tr: 'Şehir' },
+    { ar: 'قرأ', tip: 'FIIL', tr: 'Okudu' },
+    { ar: 'جديد', tip: 'SIFAT', tr: 'Yeni' },
+    { ar: 'المكتبة', tip: 'ISIM', tr: 'Kütüphane' },
+    { ar: 'طبخ', tip: 'FIIL', tr: 'Pişirdi' },
+    { ar: 'صحيح', tip: 'SIFAT', tr: 'Doğru' },
+    { ar: 'العمل', tip: 'ISIM', tr: 'İş' },
+    { ar: 'فكر', tip: 'FIIL', tr: 'Düşündü' },
+    { ar: 'مهم', tip: 'SIFAT', tr: 'Önemli' },
+    { ar: 'الجامعة', tip: 'ISIM', tr: 'Üniversite' },
+    { ar: 'ساعد', tip: 'FIIL', tr: 'Yardım etti' },
+    { ar: 'مختلف', tip: 'SIFAT', tr: 'Farklı' },
+    { ar: 'القراءة', tip: 'ISIM', tr: 'Okuma' },
+    { ar: 'كتب', tip: 'FIIL', tr: 'Yazdı' },
+    { ar: 'كبير', tip: 'SIFAT', tr: 'Büyük' },
 ];
 
 const wordDisplay = document.getElementById('word-display');
