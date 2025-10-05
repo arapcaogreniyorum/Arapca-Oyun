@@ -1,4 +1,4 @@
-// KELİME OYUNU MANTIĞI: script.js'in yeni versiyonu
+// KELİME OYUNU MANTIĞI: Yeni ve daha geniş kelime havuzu
 function checkInstagramBrowser() {
     const isInstagramBrowser = /Instagram/i.test(navigator.userAgent);
     if (isInstagramBrowser) {
@@ -8,18 +8,22 @@ function checkInstagramBrowser() {
 checkInstagramBrowser();
 
 const ALL_WORD_STAGES = [
-    // --- TEMEL SEVİYE AŞAMA 1 ---
-    [{ ar: 'مرحبا', tr: 'Merhaba' }, { ar: 'شكراً', tr: 'Teşekkürler' }, { ar: 'نعم', tr: 'Evet' }, { ar: 'لا', tr: 'Hayır' }],
-    // --- TEMEL SEVİYE AŞAMA 2 ---
-    [{ ar: 'الماء', tr: 'Su' }, { ar: 'طعام', tr: 'Yemek' }, { ar: 'بيت', tr: 'Ev' }, { ar: 'سيارة', tr: 'Araba' }],
-    // --- ORTA SEVİYE AŞAMA 3 ---
-    [{ ar: 'كتب', tr: 'Yazdı' }, { ar: 'ذهب', tr: 'Gitti' }, { ar: 'شرب', tr: 'İçti' }, { ar: 'قرأ', tr: 'Okudu' }],
-    // --- ORTA SEVİYE AŞAMA 4 ---
-    [{ ar: 'كبير', tr: 'Büyük' }, { ar: 'صغير', tr: 'Küçük' }, { ar: 'جميل', tr: 'Güzel' }, { ar: 'قبيح', tr: 'Çirkin' }],
-    // --- İLERİ SEVİYE AŞAMA 5 ---
-    [{ ar: 'الحرية', tr: 'Özgürlük' }, { ar: 'الثقافة', tr: 'Kültür' }, { ar: 'العدالة', tr: 'Adalet' }, { ar: 'التحدي', tr: 'Zorluk' }],
-    // --- İLERİ SEVİYE AŞAMA 6 ---
-    [{ ar: 'حول', tr: 'Etrafında' }, { ar: 'لأن', tr: 'Çünkü' }, { ar: 'بالرغم', tr: 'Rağmen' }, { ar: 'إلا', tr: 'Hariç' }],
+    // --- TEMEL SEVİYE AŞAMA 1 (Basit Kelimeler) ---
+    [{ ar: 'مرحبا', tr: 'Merhaba' }, { ar: 'شكراً', tr: 'Teşekkürler' }, { ar: 'نعم', tr: 'Evet' }, { ar: 'البيت', tr: 'Ev' }],
+    // --- TEMEL SEVİYE AŞAMA 2 (Fiiller) ---
+    [{ ar: 'شاهد', tr: 'İzledi' }, { ar: 'قرأ', tr: 'Okudu' }, { ar: 'طبخ', tr: 'Pişirdi' }, { ar: 'كتب', tr: 'Yazdı' }],
+    // --- ORTA SEVİYE AŞAMA 3 (Sıfatlar) ---
+    [{ ar: 'سريع', tr: 'Hızlı' }, { ar: 'جديد', tr: 'Yeni' }, { ar: 'صحيح', tr: 'Doğru' }, { ar: 'كبير', tr: 'Büyük' }],
+    // --- ORTA SEVİYE AŞAMA 4 (Mekan İsimleri) ---
+    [{ ar: 'المدينة', tr: 'Şehir' }, { ar: 'المكتبة', tr: 'Kütüphane' }, { ar: 'الجامعة', tr: 'Üniversite' }, { ar: 'العمل', tr: 'İş' }],
+    // --- İLERİ SEVİYE AŞAMA 5 (Soyut Kavramlar) ---
+    [{ ar: 'التفكير', tr: 'Düşünme' }, { ar: 'القراءة', tr: 'Okuma (isim)' }, { ar: 'السفر', tr: 'Seyahat (isim)' }, { ar: 'الحرية', tr: 'Özgürlük' }],
+    // --- İLERİ SEVİYE AŞAMA 6 (Daha Zor Fiiller) ---
+    [{ ar: 'ساعد', tr: 'Yardım etti' }, { ar: 'نسي', tr: 'Unuttu' }, { ar: 'سأل', tr: 'Sordu' }, { ar: 'تذكر', tr: 'Hatırladı' }],
+    // --- UZMAN SEVİYE AŞAMA 7 (Zor Sıfatlar) ---
+    [{ ar: 'مختلف', tr: 'Farklı' }, { ar: 'مهم', tr: 'Önemli' }, { ar: 'متعب', tr: 'Yorgun' }, { ar: 'سعيد', tr: 'Mutlu' }],
+    // --- UZMAN SEVİYE AŞAMA 8 (Çeşitli) ---
+    [{ ar: 'الصباح', tr: 'Sabah' }, { ar: 'المساء', tr: 'Akşam' }, { ar: 'الطريق', tr: 'Yol' }, { ar: 'القهوة', tr: 'Kahve' }],
 ];
 
 let currentStage = 0; 
@@ -108,6 +112,7 @@ function checkForMatch() {
                 }, 1500);
             } else {
                 setTimeout(() => {
+                    // Kelime aşaması bitince cümle oyununa yönlendir
                     alert('MUHTEŞEM! Tüm Kelime Seviyeleri bitti. Şimdi Cümle Eşleştirme başlıyor!');
                     window.location.href = 'cumle.html'; 
                 }, 1500);
