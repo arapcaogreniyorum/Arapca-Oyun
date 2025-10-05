@@ -1,3 +1,22 @@
+// INSTAGRAM VE SES SORUNU İÇİN UYARI
+function checkInstagramBrowser() {
+    // Tarayıcının kullanıcı aracısı (User Agent) bilgisinde 'Instagram' kelimesini arar
+    const isInstagramBrowser = /Instagram/i.test(navigator.userAgent);
+
+    if (isInstagramBrowser) {
+        // Eğer Instagram'ın kendi tarayıcısıysa uyarı göster
+        alert(
+            "DİKKAT! Ses Özelliği Çalışmayabilir.\n\n" +
+            "Instagram uygulaması içinden açılan tarayıcılar sesli okumayı engellemektedir.\n" +
+            "Lütfen daha iyi bir deneyim için sağ üst köşedeki üç noktaya (...) tıklayarak oyunu Chrome veya Safari gibi HARİCİ BİR TARAYICIDA açın."
+        );
+    }
+}
+
+// Oyunu başlatmadan önce bu kontrolü çalıştır
+checkInstagramBrowser();
+
+
 // 1. TÜM KELİME ÇİFTLERİ VE AŞAMALANDIRMA
 const ALL_WORD_STAGES = [
     // --- AŞAMA 1: Temel Selamlaşma ---
@@ -21,7 +40,6 @@ const ALL_WORD_STAGES = [
         { ar: 'بيت', tr: 'Ev' },
         { ar: 'عمل', tr: 'İş' },
     ]
-    // Kelime aşamaları burada bitiyor.
 ];
 
 // OYUN DURUM DEĞİŞKENLERİ
