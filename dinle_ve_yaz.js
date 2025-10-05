@@ -1,4 +1,4 @@
-// DİNLE VE YAZ MANTIĞI: Daha fazla ve daha uzun cümleler
+// DİNLE VE YAZ MANTIĞI: Genişletilmiş ve çeşitli cümleler
 const LISTEN_DATA = [
     { ar: 'هل أنت طالب في الجامعة؟', tr: 'Üniversitede öğrenci misin?' },
     { ar: 'القراءة مهمة لتطوير اللغة.', tr: 'Okuma, dil geliştirmek için önemlidir.' },
@@ -8,6 +8,8 @@ const LISTEN_DATA = [
     { ar: 'أين هو العمل الجديد الذي وجدته؟', tr: 'Bulduğun yeni iş nerede?' },
     { ar: 'كتبت كتاباً كبيراً ومختلفاً.', tr: 'Büyük ve farklı bir kitap yazdım.' },
     { ar: 'السائق كان سريعاً جداً.', tr: 'Sürücü çok hızlıydı.' },
+    { ar: 'هل تذكرت ما سألته؟', tr: 'Sorduğum şeyi hatırladın mı?' },
+    { ar: 'يجب أن نذهب إلى المكتبة صباحاً.', tr: 'Sabah kütüphaneye gitmeliyiz.' },
 ];
 
 const speakerButton = document.getElementById('speaker-button');
@@ -25,6 +27,7 @@ function speak(text, lang = 'ar-SA') {
     if (!('speechSynthesis' in window)) return;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
+    speechSynthesis.cancel();
     speechSynthesis.speak(utterance);
 }
 
@@ -61,7 +64,7 @@ checkButton.addEventListener('click', () => {
         correctScore++;
         correctScoreDisplay.textContent = correctScore;
         feedbackDisplay.textContent = 'MÜKEMMEL! ✅';
-        feedbackDisplay.style.color = 'green';
+        feedbackDisplay.style.color = 'var(--success-green)';
     } else {
         wrongScore++;
         wrongScoreDisplay.textContent = wrongScore;
