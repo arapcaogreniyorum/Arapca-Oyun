@@ -1,10 +1,7 @@
 // INSTAGRAM VE SES SORUNU İÇİN UYARI
 function checkInstagramBrowser() {
-    // Tarayıcının kullanıcı aracısı (User Agent) bilgisinde 'Instagram' kelimesini arar
     const isInstagramBrowser = /Instagram/i.test(navigator.userAgent);
-
     if (isInstagramBrowser) {
-        // Eğer Instagram'ın kendi tarayıcısıysa uyarı göster
         alert(
             "DİKKAT! Ses Özelliği Çalışmayabilir.\n\n" +
             "Instagram uygulaması içinden açılan tarayıcılar sesli okumayı engellemektedir.\n" +
@@ -13,32 +10,52 @@ function checkInstagramBrowser() {
     }
 }
 
-// Oyunu başlatmadan önce bu kontrolü çalıştır
 checkInstagramBrowser();
 
 
-// 1. TÜM KELİME ÇİFTLERİ VE AŞAMALANDIRMA
+// 1. TÜM KELİME ÇİFTLERİ VE AŞAMALANDIRMA (TEMEL, ORTA ve İLERİ SEVİYE)
 const ALL_WORD_STAGES = [
-    // --- AŞAMA 1: Temel Selamlaşma ---
+    // --- TEMEL SEVİYE AŞAMA 1: Selamlaşma ve Temel Kavramlar ---
     [
         { ar: 'مرحبا', tr: 'Merhaba' },
         { ar: 'شكراً', tr: 'Teşekkürler' },
         { ar: 'نعم', tr: 'Evet' },
         { ar: 'لا', tr: 'Hayır' },
     ],
-    // --- AŞAMA 2: Günlük Kavramlar ---
+    // --- TEMEL SEVİYE AŞAMA 2: Ortak İsimler ---
     [
         { ar: 'الماء', tr: 'Su' },
         { ar: 'طعام', tr: 'Yemek' },
-        { ar: 'صباح', tr: 'Sabah' },
-        { ar: 'مساء', tr: 'Akşam' },
+        { ar: 'بيت', tr: 'Ev' },
+        { ar: 'سيارة', tr: 'Araba' },
     ],
-    // --- AŞAMA 3: Basit Tanımlamalar ---
+    // --- ORTA SEVİYE AŞAMA 3: Fiiller (Mazi) ---
+    [
+        { ar: 'كتب', tr: 'Yazdı' },
+        { ar: 'ذهب', tr: 'Gitti' },
+        { ar: 'شرب', tr: 'İçti' },
+        { ar: 'قرأ', tr: 'Okudu' },
+    ],
+    // --- ORTA SEVİYE AŞAMA 4: Sıfatlar ve Zıtlıklar ---
     [
         { ar: 'كبير', tr: 'Büyük' },
         { ar: 'صغير', tr: 'Küçük' },
-        { ar: 'بيت', tr: 'Ev' },
-        { ar: 'عمل', tr: 'İş' },
+        { ar: 'جميل', tr: 'Güzel' },
+        { ar: 'قبيح', tr: 'Çirkin' },
+    ],
+    // --- İLERİ SEVİYE AŞAMA 5: Soyut Kavramlar ---
+    [
+        { ar: 'الحرية', tr: 'Özgürlük' },
+        { ar: 'الثقافة', tr: 'Kültür' },
+        { ar: 'العدالة', tr: 'Adalet' },
+        { ar: 'التحدي', tr: 'Zorluk' },
+    ],
+    // --- İLERİ SEVİYE AŞAMA 6: Edatlar ve Bağlaçlar ---
+    [
+        { ar: 'حول', tr: 'Etrafında' },
+        { ar: 'لأن', tr: 'Çünkü' },
+        { ar: 'بالرغم', tr: 'Rağmen' },
+        { ar: 'إلا', tr: 'Hariç' },
     ]
 ];
 
@@ -73,7 +90,6 @@ function shuffle(array) {
 function createBoard() {
     gameContainer.innerHTML = ''; 
 
-    // Cümle modu CSS'ini temizle (sadece kelime aşamaları için)
     gameContainer.classList.remove('sentence-mode'); 
 
     const wordPairs = ALL_WORD_STAGES[currentStage];
@@ -148,7 +164,6 @@ function checkForMatch() {
                 // TÜM KELİME AŞAMALARI BİTTİ -> Cümle sayfasına yönlendir
                 setTimeout(() => {
                     alert('MUHTEŞEM! Tüm Kelime Seviyeleri bitti. Şimdi Cümle Eşleştirme başlıyor!');
-                    // Kullanıcıyı yeni sayfaya yönlendir
                     window.location.href = 'cumle.html'; 
                 }, 1500);
             }
