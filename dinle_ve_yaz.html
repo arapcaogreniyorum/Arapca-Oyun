@@ -6,12 +6,39 @@
     <title>Dinle ve Yaz Oyunu</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .listen-game-container { display: flex; flex-direction: column; align-items: center; padding: 30px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); width: 90%; max-width: 400px; }
-        #speaker-button { padding: 20px 30px; font-size: 24px; background-color: #9c27b0; color: white; border: none; border-radius: 10px; cursor: pointer; transition: background-color 0.3s; margin-bottom: 30px; }
-        #speaker-button:hover { background-color: #7b1fa2; }
-        #user-input { padding: 15px; font-size: 18px; width: 90%; margin-bottom: 20px; border: 2px solid #ccc; border-radius: 8px; text-align: center; }
-        #check-button { padding: 15px 30px; font-size: 18px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s; }
-        #feedback { margin-top: 20px; font-size: 18px; font-weight: bold; min-height: 25px; }
+        /* CSS dosyasında olmayan bu oyuna özgü layout'u koruyoruz */
+        .listen-game-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 90%; 
+            max-width: 450px; 
+        }
+        #speaker-button { 
+            font-size: 24px; 
+            background-color: var(--listen-purple); 
+            margin-bottom: 30px; 
+        }
+        #user-input { 
+            padding: 15px; 
+            font-size: 18px; 
+            width: 90%; 
+            margin-bottom: 20px; 
+            border: 2px solid var(--primary-blue); 
+            border-radius: 8px; 
+            text-align: center; 
+        }
+        #check-button { 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            background-color: var(--primary-blue); 
+        }
+        #feedback { 
+            margin-top: 25px; 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            min-height: 30px; 
+        }
     </style>
 </head>
 <body>
