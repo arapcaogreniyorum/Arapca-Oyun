@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arapça Oyunlarla Dil Öğrenimi</title>
+    <link rel="stylesheet" href="style.css"> 
+    <style>
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 90%;
+            max-width: 500px;
+            margin-top: 50px;
+        }
+        .menu-button {
+            padding: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s;
+            text-decoration: none; 
+        }
+        .match-game { background-color: #007bff; } /* Mavi */
+        .type-game { background-color: #ff9800; } /* Turuncu */
+        .fill-game { background-color: #4CAF50; } /* Yeşil */
+        .listen-game { background-color: #9c27b0; } /* Mor */
+        .menu-button:hover { opacity: 0.9; }
+        .main-header { color: #007bff; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="main-header">Arapça Oyunlarla Dil Öğrenimi</h1>
+        <p>Hangi yeteneğini geliştirmek istersin? Bir oyun seçerek hemen başla!</p>
+    </header>
+
+    <div class="menu-container">
+        <a href="kelime_eslestirme.html" class="menu-button match-game">1. Kelime & Cümle Eşleştirme (Geniş Kapsam)</a>
+        <a href="kelime_tipi_avcisi.html" class="menu-button type-game">2. Kelime Tipi Avcısı (Hızlı Gramer Refleksi)</a>
+        <a href="eksik_kelime.html" class="menu-button fill-game">3. Eksik Kelimeyi Bul (Bağlam ve Akıcılık)</a>
+        <a href="dinle_ve_yaz.html" class="menu-button listen-game">4. Dinle ve Yaz (Telaffuz ve Üretim)</a>
+    </div>
+
+</body>
+</html>

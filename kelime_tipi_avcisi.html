@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelime Tipi Avcısı (Gramer Refleksi)</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .type-game-container { display: flex; flex-direction: column; align-items: center; padding: 30px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); width: 90%; max-width: 400px; }
+        #word-display { font-size: 48px; font-weight: bold; color: #ff9800; margin-bottom: 40px; min-height: 60px; }
+        .type-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
+        .type-button { padding: 15px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s; }
+        .type-button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Kelime Tipi Avcısı</h1>
+        <p>Arapça kelimenin **İsim, Fiil veya Sıfat** olup olmadığını hızlıca belirle!</p>
+        <a href="index.html" class="menu-button" style="background-color: #ccc; font-size: 14px; padding: 10px; width: 150px; display: inline-block; margin-top: 10px; border-radius: 5px; color: #333; text-decoration: none;">Ana Menüye Dön</a>
+    </header>
+
+    <section class="type-game-container">
+        <div id="word-display">Başlamak İçin Tıkla</div>
+        <div class="type-options">
+            <button class="type-button" data-type="ISIM">İSİM</button>
+            <button class="type-button" data-type="FIIL">FIIL</button>
+            <button class="type-button" data-type="SIFAT">SIFAT</button>
+        </div>
+    </section>
+
+    <div class="score-board">
+        <p>Puan: <span id="score">0</span> | Yanlış: <span id="misses">0</span></p>
+    </div>
+    
+    <script src="kelime_tipi_avcisi.js"></script>
+</body>
+</html>

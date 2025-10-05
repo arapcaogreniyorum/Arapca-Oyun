@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksik Kelimeyi Bul Oyunu</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .fill-game-container { display: flex; flex-direction: column; align-items: center; padding: 30px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); width: 90%; max-width: 600px; }
+        #sentence-display { font-size: 24px; font-weight: bold; color: #4CAF50; margin-bottom: 30px; text-align: center; line-height: 1.5; }
+        .blank-space { color: red; font-size: 28px; text-decoration: underline; padding: 0 10px; }
+        .choice-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; }
+        .choice-button { padding: 15px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s; }
+        .choice-button:hover { background-color: #388e3c; }
+        #translation-display { margin-top: 20px; font-style: italic; color: #777; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Eksik Kelimeyi Bul</h1>
+        <p>Bağlama uygun kelimeyi seçerek cümleyi tamamla ve Arapçasını öğren!</p>
+        <a href="index.html" class="menu-button" style="background-color: #ccc; font-size: 14px; padding: 10px; width: 150px; display: inline-block; margin-top: 10px; border-radius: 5px; color: #333; text-decoration: none;">Ana Menüye Dön</a>
+    </header>
+
+    <section class="fill-game-container">
+        <div id="sentence-display"></div>
+        <div class="choice-options">
+            <button class="choice-button" data-choice="1"></button>
+            <button class="choice-button" data-choice="2"></button>
+            <button class="choice-button" data-choice="3"></button>
+            <button class="choice-button" data-choice="4"></button>
+        </div>
+        <div id="translation-display"></div>
+    </section>
+
+    <div class="score-board">
+        <p>Doğru: <span id="correct-score">0</span> | Yanlış: <span id="wrong-score">0</span></p>
+    </div>
+    
+    <script src="eksik_kelime.js"></script>
+</body>
+</html>
