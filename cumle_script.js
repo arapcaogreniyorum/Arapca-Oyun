@@ -1,25 +1,53 @@
 // CÜMLE OYUNU MANTIK DOSYASI
+// Bu dosya, ana kelime oyunu bittikten sonra yönlendirilen sayfayı yönetir.
 
-// 1. CÜMLE AŞAMALARI
+// 1. CÜMLE AŞAMALARI (TEMEL, ORTA ve İLERİ SEVİYE)
 const ALL_WORD_STAGES = [
-    // --- CÜMLE AŞAMASI 1 ---
+    // --- TEMEL CÜMLE AŞAMASI 1: Günlük Konuşma ---
     [
         { ar: 'أريد كوب قهوة', tr: 'Bir fincan kahve istiyorum' },
         { ar: 'كم سعر هذا؟', tr: 'Bunun fiyatı ne kadar?' },
         { ar: 'أين الحمام؟', tr: 'Banyo nerede?' },
         { ar: 'لا أفهم', tr: 'Anlamıyorum' },
     ],
-    // --- CÜMLE AŞAMASI 2 ---
+    // --- TEMEL CÜMLE AŞAMASI 2: Temel Fiil Kullanımı ---
     [
-        { ar: 'مع السلامة', tr: 'Güle güle' },
-        { ar: 'تفضل بالجلوس', tr: 'Buyurun oturun' },
-        { ar: 'أنا سعيد جداً', tr: 'Çok mutluyum' },
         { ar: 'هل أنت بخير؟', tr: 'İyi misin?' },
+        { ar: 'نحن ذاهبون الآن', tr: 'Biz şimdi gidiyoruz' },
+        { ar: 'أنا أقرأ كتاباً', tr: 'Ben bir kitap okuyorum' },
+        { ar: 'مع السلامة', tr: 'Güle güle' },
+    ],
+    // --- ORTA CÜMLE AŞAMASI 3: Gelecek Zaman ve İhtiyaç ---
+    [
+        { ar: 'سأذهب إلى السوق غداً', tr: 'Yarın markete gideceğim' },
+        { ar: 'يجب أن ندرس أكثر', tr: 'Daha çok ders çalışmalıyız' },
+        { ar: 'أبحث عن وظيفة جديدة', tr: 'Yeni bir iş arıyorum' },
+        { ar: 'ما رأيك في هذا؟', tr: 'Bu konuda ne düşünüyorsun?' },
+    ],
+    // --- ORTA CÜMLE AŞAMASI 4: Edatlı İfadeler ---
+    [
+        { ar: 'القطة على الطاولة', tr: 'Kedi masanın üzerinde' },
+        { ar: 'تحدثت مع صديقي', tr: 'Arkadaşımla konuştum' },
+        { ar: 'أفكر في المستقبل', tr: 'Geleceği düşünüyorum' },
+        { ar: 'الاجتماع يبدأ قريباً', tr: 'Toplantı yakında başlıyor' },
+    ],
+    // --- İLERİ CÜMLE AŞAMASI 5: Şart Cümleleri (Eğer/Şayet) ---
+    [
+        { ar: 'إذا درست، ستنجح', tr: 'Eğer çalışırsan, başarılı olursun' },
+        { ar: 'لو كنت أعرف، لكنت أخبرتك', tr: 'Bilseydim, sana söylerdim' },
+        { ar: 'أنا مقتنع بأن هذا صحيح', tr: 'Bunun doğru olduğuna ikna oldum' },
+        { ar: 'ليس كل ما يلمع ذهباً', tr: 'Parlayan her şey altın değildir' },
+    ],
+    // --- İLERİ CÜMLE AŞAMASI 6: Mastar ve Bağlaç Kullanımı ---
+    [
+        { ar: 'هدفي هو تعلم اللغة', tr: 'Hedefim dili öğrenmek' },
+        { ar: 'بسبب المطر، ألغينا الرحلة', tr: 'Yağmur nedeniyle geziyi iptal ettik' },
+        { ar: 'على الرغم من الصعوبة، واصلنا', tr: 'Zorluğa rağmen devam ettik' },
+        { ar: 'من المهم ممارسة الرياضة', tr: 'Spor yapmak önemlidir' },
     ]
-    // İhtiyaç duydukça buraya yeni cümle aşamaları ekleyebilirsiniz!
 ];
 
-// OYUN DURUM DEĞİŞKENLERİ (Kelime scripti ile aynı)
+// OYUN DURUM DEĞİŞKENLERİ
 let currentStage = 0; 
 let currentStageWords = []; 
 
@@ -50,7 +78,11 @@ function shuffle(array) {
 function createBoard() {
     gameContainer.innerHTML = ''; 
 
-    // Dikkat: Bu dosyada 'sentence-mode' sınıfı HTML'de zaten tanımlı.
+    // Cümle modu CSS'i burada gerekli
+    if (!gameContainer.classList.contains('sentence-mode')) {
+        gameContainer.classList.add('sentence-mode');
+    }
+
     const wordPairs = ALL_WORD_STAGES[currentStage];
     
     currentStageWords = [];
@@ -95,7 +127,7 @@ function flipCard() {
     }
 }
 
-// EŞLEŞME KONTROLÜ (BİTİŞ EKRANI BU SAYFADA FARKLI)
+// EŞLEŞME KONTROLÜ
 function checkForMatch() {
     const [card1, card2] = flippedCards;
 
