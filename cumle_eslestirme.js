@@ -1,29 +1,29 @@
 // CÜMLE OYUNU MANTIK DOSYASI
 const ALL_WORD_STAGES = [
-    // --- TEMEL CÜMLE AŞAMASI 1 (Turistik & Günlük) ---
+    // TEMEL CÜMLE AŞAMASI 1 (Günlük konuşma)
     [
         { ar: 'أريد كوب قهوة', tr: 'Bir fincan kahve istiyorum' },
         { ar: 'كم سعر هذا؟', tr: 'Bunun fiyatı ne kadar?' },
         { ar: 'أين الحمام؟', tr: 'Banyo nerede?' },
-        { ar: 'لا أفهم', tr: 'Anlamıyorum' },
+        { ar: 'لا أفهم ماذا تقول.', tr: 'Ne dediğini anlamıyorum.' },
     ],
-    // --- ORTA CÜMLE AŞAMASI 2 (Duygular & Neden-Sonuç) ---
+    // ORTA CÜMLE AŞAMASI 2 (Duygular ve Fikirler)
     [
-        { ar: 'أشعر بالملل قليلاً', tr: 'Biraz sıkılmış hissediyorum' },
-        { ar: 'يجب أن أذهب الآن', tr: 'Şimdi gitmem gerekiyor' },
-        { ar: 'أفضل العمل بمفردي', tr: 'Tek başıma çalışmayı tercih ederim' },
-        { ar: 'ما رأيك في هذا؟', tr: 'Bu konuda ne düşünüyorsun?' },
+        { ar: 'أشعر بالملل قليلاً اليوم.', tr: 'Bugün biraz sıkılmış hissediyorum.' },
+        { ar: 'يجب أن أذهب إلى العمل الآن.', tr: 'Şimdi işe gitmem gerekiyor.' },
+        { ar: 'أفضل القراءة في المكتبة.', tr: 'Kütüphanede okumayı tercih ederim.' },
+        { ar: 'ما رأيك في هذا الكتاب الجديد؟', tr: 'Bu yeni kitap hakkında ne düşünüyorsun?' },
     ],
-    // --- İLERİ CÜMLE AŞAMASI 3 (Soyut & Akademik) ---
+    // İLERİ CÜMLE AŞAMASI 3 (Neden-Sonuç ve Soyut)
     [
-        { ar: 'هدفي هو تعلم اللغة', tr: 'Hedefim dili öğrenmek' },
-        { ar: 'بسبب المطر، ألغينا الرحلة', tr: 'Yağmur nedeniyle geziyi iptal ettik' },
-        { ar: 'على الرغم من الصعوبة، واصلنا', tr: 'Zorluğa rağmen devam ettik' },
-        { ar: 'من المهم ممارسة الرياضة', tr: 'Spor yapmak önemlidir' },
+        { ar: 'هدفي هو تعلم اللغة العربية.', tr: 'Hedefim Arapça dilini öğrenmek.' },
+        { ar: 'بسبب المطر، ألغينا السفر إلى المدينة.', tr: 'Yağmur nedeniyle şehre seyahati iptal ettik.' },
+        { ar: 'على الرغم من الصعوبة، واصلنا التفكير.', tr: 'Zorluğa rağmen düşünmeye devam ettik.' },
+        { ar: 'من المهم أن تكون سعيداً ومختلفاً.', tr: 'Mutlu ve farklı olmak önemlidir.' },
     ]
 ];
 
-// OYUN MANTIĞI (Kelime.js ile aynı mantık, cümle kartlarına uygun)
+// OYUN MANTIĞI (Kelime.js ile aynı mantık)
 let currentStage = 0; 
 const gameContainer = document.querySelector('.game-container');
 const matchedPairsDisplay = document.getElementById('matched-pairs');
@@ -40,6 +40,7 @@ function speak(text, lang) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
     utterance.onend = () => { isSpeaking = false; };
+    speechSynthesis.cancel();
     speechSynthesis.speak(utterance);
 }
 
