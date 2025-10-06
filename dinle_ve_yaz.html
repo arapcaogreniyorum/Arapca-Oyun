@@ -3,47 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arapça Dinle ve Yaz - İşitsel Kavrama</title>
+    <title>Dinle ve Yaz</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .listen-game-container { text-align: center; }
-        #speaker-button { background-color: var(--listen-purple); padding: 20px 30px; margin-bottom: 30px; font-size: 1.2rem;}
-        #user-input { width: 80%; padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 2px solid #ccc; text-align: right; direction: rtl;}
-        #check-button { background-color: var(--primary-blue); margin-top: 20px; padding: 15px 30px; font-size: 1.2rem;}
-        #feedback { font-size: 1.1rem; margin-top: 20px; min-height: 25px; }
-        .score-board { display: flex; justify-content: space-around; }
+        .listen-game-container {
+            text-align: center;
+        }
+        #speaker-button {
+            background-color: var(--listen-purple);
+            color: white;
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 30px;
+        }
+        #speaker-button:hover {
+            background-color: #6a40a8; 
+        }
+        #user-input {
+            width: 80%;
+            max-width: 400px;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid var(--listen-purple);
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        #check-button {
+            background-color: var(--success-green);
+            color: white;
+            padding: 10px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #feedback {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            min-height: 25px;
+        }
     </style>
 </head>
 <body onload="checkAndDisplayWarning()">
 
     <header>
-        <h1>Dinle ve Yaz (İşitsel Pratik)</h1>
-        <p>Duyduğun Arapça kelime veya cümlenin Türkçe karşılığını yaz. Ses butonuna tekrar basarak dinleyebilirsin.</p>
+        <h1>Dinle ve Yaz</h1>
+        <p>Duyduğun Arapça kelime veya cümlenin **Türkçe karşılığını** yaz.</p>
     </header>
 
     <div class="listen-game-container">
         <div class="score-board">
             Doğru: <span id="correct-score-listen">0</span> | Yanlış: <span id="wrong-score-listen">0</span>
         </div>
-        
-        <button id="speaker-button" class="type-button">🔊 Dinle</button>
-        
-        <input type="text" id="user-input" placeholder="Türkçe karşılığını buraya yazın..." required>
-        
-        <button id="check-button" class="type-button">Cevabı Kontrol Et</button>
 
-        <div id="feedback"></div>
+        <button id="speaker-button">🔊 Tekrar Dinle</button>
+
+        <div>
+            <input type="text" id="user-input" placeholder="Türkçe karşılığını buraya yazın...">
+            <button id="check-button">Kontrol Et</button>
+        </div>
+        
+        <div id="feedback">Dinlemeye Hazır.</div>
     </div>
 
     <div class="controls">
-        <a href="index.html" class="menu-button" style="background-color: var(--secondary-orange);">Ana Menü</a>
+        <a href="index.html" class="menu-button" style="background-color: var(--primary-blue);">Ana Menü</a>
     </div>
 
     <script src="utility.js"></script>
     <script src="dinle_ve_yaz.js"></script>
     
     <footer class="footer">
-        <p>&copy; 2024 Arapça Öğrenme Oyunları</p>
+        <p>&copy; 2025 Arapça Öğrenme Oyunları</p>
     </footer>
 </body>
 </html>
