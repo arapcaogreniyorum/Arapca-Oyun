@@ -98,32 +98,36 @@ function checkAndDisplayWarning() {
 
 
 // ------------------------------------------------------------------
-// TELAFUZ DÜZELTME FONKSİYONU (YENİ EKLENDİ)
+// TELAFUZ DÜZELTME FONKSİYONU (SON VE EN GÜÇLÜ VERSİYON)
 // ------------------------------------------------------------------
 
 /**
- * Arapça kelimeleri konuşma tanıma ve veri eşleştirmesi için basitleştirir.
- * - Harekeleri ve Şeddeleri kaldırır.
- * - Elif, Yuvarlak T ve Elif Maksura varyasyonlarını standartlaştırır.
+ * Arapça kelimeleri konuşma tanıma ve veri eşleştirmesi için agrasif olarak temizler ve basitleştirir.
+ * Yalnızca Arapça harfleri tutar ve standartlaştırır.
  */
 function normalizeArabic(text) {
     if (!text) return "";
     
     let normalized = text.trim().toLowerCase();
     
-    // 1. Harekeleri (Vowels) ve Şeddeyi Kaldır (Çoğu tarayıcıda zaten tanıma sırasında kaldırılır, ama garanti olsun)
+    // 1. YALNIZCA ARAPÇA HARFLERİ VE BOŞLUKLARI KORUYAN FİLTRELEME
+    // Bu, araya giren İngilizce/Türkçe kelimeleri, noktalama işaretlerini, rakamları tamamen kaldırır.
+    normalized = normalized.replace(/[^\u0600-\u06FF\s]/g, ""); 
+    
+    // 2. Harekeleri (Vowels) ve Şeddeyi Kaldır
     normalized = normalized.replace(/[\u064b-\u065e\u0651]/g, ""); 
     
-    // 2. Elif Varyasyonlarını Standartlaştır (آ، أ، إ -> ا)
+    // 3. Elif Varyasyonlarını Standartlaştır (آ، أ، إ -> ا)
     normalized = normalized.replace(/[\u0622\u0623\u0625]/g, "\u0627"); 
     
-    // 3. Yuvarlak T (ة) ve normal H (ه) farkını standartlaştır (ة -> ه)
+    // 4. Yuvarlak T (ة) ve normal H (ه) farkını standartlaştır (ة -> ه)
+    // Bu, "سيارة" ve "سياره" sorununu kesin çözer.
     normalized = normalized.replace(/\u0629/g, "\u0647"); 
     
-    // 4. Elif Maksura (ى) ve Yaa (ي) standartlaştır (ى -> ي)
+    // 5. Elif Maksura (ى) ve Yaa (ي) standartlaştır (ى -> ي)
     normalized = normalized.replace(/\u0649/g, "\u064A"); 
     
-    // 5. Birden fazla boşluğu tek boşluğa indir ve baştaki/sondaki boşlukları kaldır.
+    // 6. Birden fazla boşluğu tek boşluğa indir ve baştaki/sondaki boşlukları kaldır.
     normalized = normalized.replace(/\s+/g, " ").trim();
     
     return normalized;
