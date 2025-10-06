@@ -89,3 +89,29 @@ function checkAndDisplayWarning() {
         localStorage.setItem(CACHE_KEY, 'true');
     };
 }
+
+// utility.js dosyasının sonuna ekle
+
+function getDifficultWords(gameId = 'kelime_tipi') {
+    const list = localStorage.getItem(`difficult_words_${gameId}`);
+    return list ? JSON.parse(list) : [];
+}
+
+function updateDifficultWords(word, action, gameId = 'kelime_tipi') {
+    let difficultWords = getDifficultWords(gameId);
+    
+    // Kelimeyi büyük/küçük harf fark etmeksizin kaydet (ar)
+    const arWord = word.ar; 
+
+    if (action === 'add') {
+        // Zaten listede yoksa ekle
+        if (!difficultWords.some(w => w.ar === arWord)) {
+            difficultWords.push(word);
+        }
+    } else if (action === 'remove') {
+        // Doğru bildiyse listeden çıkar
+        difficultWords = difficultWords.filter(w => w.ar !== arWord);
+    }
+    
+    localStorage.setItem(`difficult_words_${gameId}`, JSON.stringify(difficultWords));
+}
