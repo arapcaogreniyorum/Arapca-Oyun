@@ -1,6 +1,7 @@
-// eksik_kelime.js - Eksik Kelimeyi Bul Oyununun Mantığı (Son Versiyon)
+// eksik_kelime.js - Eksik Kelimeyi Bul Oyununun Mantığı (KESİN DÜZELTME)
 
 let sentences = [];
+let allWords = []; // Yeni: Tüm kelimeleri burada tutacağız
 let currentSentenceIndex = 0;
 let correctScore = 0;
 let wrongScore = 0;
@@ -8,8 +9,13 @@ let wrongScore = 0;
 document.addEventListener('DOMContentLoaded', () => {
     loadData().then(data => {
         if (data) {
+            window.allData = data; // Tüm veriyi global olarak atıyoruz
+            
+            // Eksik kelime cümlelerini ve tüm kelimeleri al
             sentences = data.eksik_kelime_cumleleri;
-            if (sentences.length === 0) {
+            allWords = data.kelimeler.map(k => k.ar);
+            
+            if (!sentences || sentences.length === 0) {
                 document.getElementById('sentence-display').textContent = "Yeterli cümle bulunamadı.";
                 return;
             }
@@ -30,12 +36,12 @@ function displayNextSentence() {
     }
 
     const current = sentences[currentSentenceIndex];
+    // Doğru kelimeyi [dogru_kelime] formatından çıkarıp yerine boşluk koyuyoruz
     const sentenceWithBlank = current.ar.replace(`[${current.dogru}]`, '<span class="blank-space">...</span>');
     sentenceDisplay.innerHTML = sentenceWithBlank;
     translationDisplay.textContent = current.tr.replace(`[${current.dogru}]`, '__________');
 
     // Seçenekleri hazırla (3 rastgele yanlış kelime + 1 doğru kelime)
-    const allWords = window.allData.kelimeler.map(k => k.ar);
     const incorrectWords = allWords.filter(w => w !== current.dogru);
     shuffle(incorrectWords);
     
@@ -66,17 +72,18 @@ function checkChoice(button, correctAnswer) {
 
     // Butonları devre dışı bırak
     buttons.forEach(btn => btn.disabled = true);
-    // Tüm butonlardan geri bildirim sınıflarını temizle
+    // Geri bildirim sınıflarını temizle
     buttons.forEach(btn => btn.classList.remove('correct-feedback', 'incorrect-feedback'));
 
 
     if (selectedAnswer === correctAnswer) {
         correctScore++;
-        button.classList.add('correct-feedback'); // Yeşil çerçeve
-        sentenceDisplay.innerHTML = sentenceDisplay.innerHTML.replace('<span class="blank-space">...</span>', `<span class="blank-space correct-feedback">${correctAnswer}</span>`);
+        button.classList.add('correct-feedback');
+        // Boşluğu doğru cevapla ve yeşil renkle doldur
+        sentenceDisplay.innerHTML = sentenceDisplay.innerHTML.replace('<span class="blank-space">...</span>', `<span class="blank-space correct-feedback" style="color: var(--success-green);">${correctAnswer}</span>`);
     } else {
         wrongScore++;
-        button.classList.add('incorrect-feedback'); // Kırmızı çerçeve
+        button.classList.add('incorrect-feedback');
         
         // Doğru cevabı bul ve yeşil yap
         buttons.forEach(btn => {
@@ -84,7 +91,8 @@ function checkChoice(button, correctAnswer) {
                 btn.classList.add('correct-feedback');
             }
         });
-        sentenceDisplay.innerHTML = sentenceDisplay.innerHTML.replace('<span class="blank-space">...</span>', `<span class="blank-space incorrect-feedback">${correctAnswer}</span>`);
+        // Boşluğu yanlış cevapla kırmızı göster
+        sentenceDisplay.innerHTML = sentenceDisplay.innerHTML.replace('<span class="blank-space">...</span>', `<span class="blank-space incorrect-feedback" style="color: red;">${correctAnswer}</span>`);
     }
 
     document.getElementById('correct-score').textContent = correctScore;
@@ -97,27 +105,22 @@ function checkChoice(button, correctAnswer) {
 }
 
 function endGame() {
-// eksik_kelime.js dosyasından:
-function endGame() {
     const sentenceDisplay = document.getElementById('sentence-display');
     const translationDisplay = document.getElementById('translation-display');
-    const choiceOptions = document.getElementById('choice-options'); // Hedef div
+    const choiceOptions = document.getElementById('choice-options');
 
     sentenceDisplay.innerHTML = `Oyun Bitti! Skor: ${correctScore} Doğru, ${wrongScore} Yanlış`;
     translationDisplay.textContent = "Tebrikler, tüm cümleleri tamamladınız!";
     
-    // İlerleme Kaydı
     localStorage.setItem('fill_completed', 'true');
 
-    // Tekrar Oyna Butonu (choiceOptions div'ini kullanarak butonu ekliyoruz)
+    // Tekrar Oyna Butonu
     choiceOptions.innerHTML = `
         <button id="restart-button" class="choice-button" style="background-color: var(--primary-blue);">Baştan Başla (Tekrar Oyna)</button>
     `;
     
-    // BUTON SINIFINI choice-button olarak güncelledik
     document.getElementById('restart-button').addEventListener('click', restartGame);
 }
-
 
 function restartGame() {
     correctScore = 0;
