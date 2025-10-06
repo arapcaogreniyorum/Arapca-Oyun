@@ -23,7 +23,7 @@
             color: white;
             transition: all 0.3s ease;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            overflow: hidden; /* Kenar yuvarlaklığını korumak için */
+            overflow: hidden; 
         }
         .menu-item:hover {
             transform: translateY(-3px);
@@ -45,9 +45,54 @@
         .type-game { background-color: var(--secondary-orange); } 
         .fill-game { background-color: var(--success-green); } 
         .listen-game { background-color: var(--listen-purple); } 
+
+        /* UYARI KUTUSU STİLİ */
+        #app-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .warning-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-width: 350px;
+            text-align: center;
+        }
+        .warning-box h2 {
+            color: red;
+            margin-top: 0;
+        }
+        .warning-box button {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
+    
+    <div id="app-warning">
+        <div class="warning-box">
+            <h2>⚠️ ÖNEMLİ UYARI</h2>
+            <p>Eğer bu sayfayı **Instagram, TikTok veya Facebook** gibi uygulamaların içindeki gömülü tarayıcıdan açtıysanız, cihazınızın güvenlik kısıtlamaları nedeniyle **seslendirmeler çalışmayabilir.**</p>
+            <p>Sorunsuz bir deneyim için, lütfen bağlantıyı kopyalayıp **Chrome, Safari veya Firefox** gibi harici bir tarayıcıda açın.</p>
+            <button onclick="hideWarning()">Tamam, Anladım</button>
+        </div>
+    </div>
 
     <header>
         <h1>Arapça Oyunlarla Dil Öğrenimi</h1>
@@ -85,6 +130,13 @@
             </a>
         </div>
     </footer>
+
+    <script>
+        // Uyarı kutusunu gizleyen fonksiyon
+        function hideWarning() {
+            document.getElementById('app-warning').style.display = 'none';
+        }
+    </script>
 
 </body>
 </html>
