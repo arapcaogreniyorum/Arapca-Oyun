@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arapça Telaffuz Pratiği - Konuşma Tanıma</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .speech-game-container { text-align: center; }
+        #word-to-read { 
+            font-size: 2.8rem; 
+            font-weight: bold; 
+            margin: 30px 0; 
+            min-height: 80px; 
+            direction: rtl; 
+            color: var(--listen-purple); 
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f7f7f7;
+        }
+        #translation-display { font-size: 1.1rem; margin-top: 10px; color: #555; }
+        #user-speech-output { font-style: italic; min-height: 25px; margin-top: 15px; color: #007bff; }
+        
+        .control-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 30px; }
+        
+        #listen-model, #start-speech { 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #listen-model { background-color: var(--primary-blue); color: white; }
+        #start-speech { background-color: var(--listen-purple); color: white; }
+        
+        #start-speech:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        .score-board { display: flex; justify-content: space-around; }
+    </style>
+</head>
+<body onload="checkAndDisplayWarning()">
+
+    <header>
+        <h1>Arapça Telaffuz Pratiği</h1>
+        <p>Arapça cümleyi sesli olarak okuyun. Sistem telaffuzunuzu tanımaya çalışacak!</p>
+    </header>
+
+    <div class="speech-game-container">
+        <div class="score-board">
+            Başarılı: <span id="correct-score-speech">0</span> | Tekrar Dene: <span id="retry-score-speech">0</span>
+        </div>
+
+        <div id="word-to-read">Yükleniyor...</div>
+        <div id="translation-display"></div>
+        <div id="user-speech-output"></div>
+
+        <div class="control-buttons">
+            <button id="listen-model">🔊 Doğru Okunuşu Dinle</button>
+            <button id="start-speech">🎤 Başla ve Oku</button>
+        </div>
+        
+        <div id="feedback" style="margin-top: 20px; font-size: 1.2rem;"></div>
+    </div>
+
+    <div class="controls">
+        <a href="index.html" class="menu-button" style="background-color: var(--success-green);">Ana Menü</a>
+    </div>
+
+    <script src="utility.js"></script>
+    <script src="telaffuz_pratigi.js"></script>
+    
+    <footer class="footer">
+        <p>&copy; 2024 Arapça Öğrenme Oyunları</p>
+    </footer>
+</body>
+</html>
