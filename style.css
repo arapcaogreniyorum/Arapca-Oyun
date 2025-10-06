@@ -1,4 +1,4 @@
-/* style.css - GÜNCEL EĞLENCELİ TEMA VE KESİN MOBİL UYUMLULUK */
+/* style.css - GÜNCEL EĞLENCELİ TEMA VE MOBİL UYUMLULUK */
 
 :root {
     /* Ana Renk Paleti */
@@ -12,7 +12,7 @@
 }
 
 * {
-    box-sizing: border-box; 
+    box-sizing: border-box; /* Tüm elementler için kutu modelini düzeltir */
 }
 
 body {
@@ -35,7 +35,7 @@ header {
 
 h1 {
     color: var(--primary-blue); 
-    font-size: 2.5rem; 
+    font-size: 2.5rem; /* Başlık boyutunu mobil için ayarla */
     margin-bottom: 10px;
 }
 
@@ -50,7 +50,7 @@ p {
     transition: all 0.3s ease;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
     border: none;
-    border-radius: 8px; 
+    border-radius: 8px; /* Daha küçük radius */
     cursor: pointer;
     color: white;
 }
@@ -66,11 +66,11 @@ p {
 .type-game-container, 
 .fill-game-container, 
 .listen-game-container,
-.match-game-container { /* Eşleştirme konteynerini de buraya ekledik */
+.match-game-container { /* Eşleştirme konteyneri de eklendi */
     background-color: #ffffff;
     border-radius: 12px; 
     box-shadow: var(--card-shadow);
-    padding: 20px; 
+    padding: 20px; /* Mobil için padding azaltıldı */
     width: 100%;
     max-width: 800px; 
     margin-top: 10px;
@@ -78,11 +78,12 @@ p {
 }
 
 
-/* --- EŞLEŞTİRME OYUNU KARTLARI (GENEL VE MASAÜSTÜ İÇİN TEMEL AYAR) --- */
-.match-game-container { /* Sadece eşleştirme konteyneri için düzenle */
+/* --- EŞLEŞTİRME OYUNU KARTLARI --- */
+.match-game-container { /* Sadece eşleştirme konteyneri için eklendi */
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Masaüstünde 4 sütun */
-    gap: 15px; 
+    /* Masaüstü ve tabletler için temel ayar: 4 sütunlu düzen */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 15px; /* Boşluk azaltıldı */
 }
 
 .card {
@@ -120,7 +121,7 @@ p {
     /* animation: pulse 1s ease-in-out; */
 }
 
-/* Cümleler için Yazı Ayarı */
+/* Cümleler için Yazı Ayarı (Masaüstü) */
 .card[data-lang="tr-TR"] {
     font-size: 16px; 
 }
@@ -207,26 +208,27 @@ p {
         font-size: 0.9rem;
     }
     
-    /* 2. Eşleştirme Oyununun Düzeni (Kritik Düzeltme) */
+    /* 2. Eşleştirme Oyununun Düzeni (KRİTİK ÇÖZÜM) */
     .match-game-container {
-        grid-template-columns: repeat(3, 1fr); /* 4 yerine 3 sütun yap */
+        /* Yana kaymayı engellemek için 4 sütun yerine 2 sütuna indirildi */
+        grid-template-columns: repeat(2, 1fr); 
         gap: 8px; 
     }
     .card {
-        height: 85px; /* Kart yüksekliğini küçült */
-        font-size: 1rem; 
-        padding: 8px 3px;
+        height: 75px; /* Kart yüksekliğini azalttık */
+        font-size: 0.9rem; /* Genel yazıyı küçülttük */
+        padding: 5px 2px; /* İç boşluğu azalttık */
     }
     .card[data-lang="tr-TR"] {
-        font-size: 13px; /* Türkçe cümleleri daha küçük yap */
+        font-size: 12px; 
     }
     .card[data-lang="ar-SA"] {
-        font-size: 1.4rem; /* Arapça kelimeleri biraz küçült */
+        font-size: 1.2rem; 
     }
 
     /* 3. Tip Avcısı / Eksik Kelime Butonları */
     #type-options, #choice-options {
-        flex-direction: column; /* Butonları alt alta sırala */
+        flex-direction: column; /* Alt alta diz */
         gap: 8px;
     }
     .type-button, .choice-button {
