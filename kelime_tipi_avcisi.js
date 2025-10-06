@@ -90,20 +90,46 @@ function checkAnswer(selectedType, clickedButton) {
     }, 1500);
 }
 
+// kelime_tipi_avcisi.js dosyasından (endGame fonksiyonu)
+
 function endGame() {
     const display = document.getElementById('word-display');
     const optionsContainer = document.getElementById('type-options');
     
-    display.textContent = `Oyun Bitti! Skor: ${score} Doğru, ${misses} Yanlış`;
-    display.style.color = 'var(--primary-blue)';
-
-    // Tekrar Oyna Butonu Ekle
-    optionsContainer.innerHTML = `
-        <button id="restart-button" class="type-button" style="background-color: var(--primary-blue);">Baştan Başla (Tekrar Oyna)</button>
-    `;
+    // Oyun sonu toplam skorlarını hesapla
+    const totalQuestions = score + misses;
+    const successRate = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
     
+    // Kelime alanını temizle ve bitiş mesajını göster
+    display.innerHTML = `
+        <div style="color: var(--primary-blue); margin-bottom: 20px;">
+            <h2>🎉 Oyun Tamamlandı!</h2>
+        </div>
+    `;
+
+    // Seçenekler alanına detaylı puan tablosunu ve butonu yerleştir
+    optionsContainer.innerHTML = `
+        <div class="score-summary" style="text-align: left; width: 100%; max-width: 300px; margin: 0 auto 30px; padding: 15px; background-color: var(--light-bg); border-radius: 8px;">
+            <h3 style="margin-top: 0; color: var(--secondary-orange);">Sonuçlar</h3>
+            <p><strong>Toplam Soru:</strong> ${totalQuestions}</p>
+            <p style="color: var(--success-green);"><strong>Doğru Cevap:</strong> ${score}</p>
+            <p style="color: red;"><strong>Yanlış Cevap:</strong> ${misses}</p>
+            <hr style="border-top: 1px solid #ddd;">
+            <p><strong>Başarı Oranı:</strong> %${successRate}</p>
+        </div>
+        
+        <button id="restart-button" class="type-button" style="background-color: var(--primary-blue);">
+            Baştan Başla (Tekrar Oyna)
+        </button>
+    `;
+
+    // İlerleme Kaydı ve Buton Dinleyicisi
+    localStorage.setItem('type_completed', 'true');
     document.getElementById('restart-button').addEventListener('click', restartGame);
 }
+
+// Diğer fonksiyonlar (restartGame, checkAnswer, vb.) aynı kalır.
+
 
 function restartGame() {
     // Skorları sıfırla ve oyunu yeniden başlat
