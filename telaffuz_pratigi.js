@@ -92,25 +92,58 @@ function processSpeechResult(result) {
     document.getElementById('start-speech').disabled = false;
     document.getElementById('listen-model').disabled = false;
 
-    // --- KRİTİK DÜZELTME BAŞLANGICI: normalizeArabic fonksiyonu kullanılıyor ---
+    // --- KRİTİK VE SIKI EŞLEŞTİRME DÜZELTMESİ BAŞLANGICI ---
     
-    // Sistemden gelen metin ve model metin normalize ediliyor. (utility.js'den gelen normalizeArabic)
+    // Model ve Sonucu normalizeArabic ile temizle (utility.js'deki son, en agresif temizleyici)
     const normalizedResult = normalizeArabic(result);
     const normalizedModel = normalizeArabic(currentItem.ar); 
     
-    // Basit ve güvenilir kontrol: Algılanan metin, model metni içeriyor mu?
-    // Bu, "سياره سياره" gibi tekrarlı veya "kitap" yerine "el kitap" gibi ek kelime içeren sonuçları da kabul etmeyi kolaylaştırır.
-    const isMatch = normalizedResult.includes(normalizedModel);
-    
-    // Ayrıca, telaffuzun çok kısa olmaması için bir uzunluk kontrolü de ekleyebiliriz (isteğe bağlı, basitleştirilmiş)
-    const minLengthCheck = normalizedResult.length > normalizedModel.length * 0.5;
+    // Modeli ve sonucu kelime dizilerine ayır
+    const modelWords = normalizedModel.split(' ').filter(w => w.length > 0);
+    const resultWords = normalizedResult.split(' ').filter(w => w.length > 0); 
 
-    if (isMatch && minLengthCheck) { 
+    let successfulMatches = 0;
+    
+    // Eğer beklenen tek bir kelimeyse:
+    if (modelWords.length === 1) {
+        // En güvenilir kontrol: Normalleştirilmiş sonuç, modeli içeriyor mu?
+        // Bu, "سياره سياره" gibi hatalı tekrarları dahi doğru sayar.
+        const perfectMatch = normalizedResult.includes(normalizedModel);
+        
+        if (perfectMatch) {
+            successfulMatches = 1; 
+        }
+    
+    // Eğer beklenen birden fazla kelimeden oluşan bir cümle ise:
+    } else {
+        // Her bir model kelimesi için, sonuçtaki kelimelerde bir eşleşme arayalım
+        const matchedIndices = new Set();
+        
+        modelWords.forEach(mWord => {
+            // Sonuç kelimeleri içinde eşleşen kelimeyi bul (aynı kelimeyi iki kez eşleştirmemek için Set kullanılıyor)
+            const resultIndex = resultWords.findIndex((rWord, index) => 
+                !matchedIndices.has(index) && (rWord === mWord || rWord.includes(mWord) || mWord.includes(rWord))
+            );
+
+            if (resultIndex !== -1) {
+                successfulMatches++;
+                matchedIndices.add(resultIndex);
+            }
+        });
+        
+        // Eşleşme sayısını, model kelime sayısının en az %60'ı olmalıdır.
+        if (successfulMatches < modelWords.length * 0.6) {
+            successfulMatches = 0; // %60 eşleşmezse, başarısız say
+        }
+    }
+    // --- KRİTİK VE SIKI EŞLEŞTİRME DÜZELTMESİ SONU ---
+
+    if (successfulMatches > 0) { 
         correctScore++;
         document.getElementById('feedback').textContent = "✅ Mükemmel! Telaffuzunuz başarılıydı. Tebrikler!";
         document.getElementById('feedback').style.color = 'var(--success-green)';
         
-        // Zor kelimelerden çıkar (eğer telaffuz oyunu için zor kelime takibi yapılıyorsa)
+        // Zor kelime takibi için:
         // updateDifficultWords(currentItem, 'remove', 'telaffuz_pratigi'); 
         
         setTimeout(nextItem, 2500);
@@ -119,7 +152,7 @@ function processSpeechResult(result) {
         document.getElementById('feedback').textContent = `❌ Tekrar Deneyin. Telaffuzunuz tam eşleşmedi. Doğru model: "${currentItem.ar}"`;
         document.getElementById('feedback').style.color = 'red';
         
-        // Zor kelimelere ekle
+        // Zor kelimelere ekle:
         // updateDifficultWords(currentItem, 'add', 'telaffuz_pratigi'); 
         
         setTimeout(() => {
@@ -127,7 +160,6 @@ function processSpeechResult(result) {
             document.getElementById('feedback').style.color = 'var(--dark-text)';
         }, 3000);
     }
-    // --- KRİTİK DÜZELTME SONU ---
 
     document.getElementById('correct-score-speech').textContent = correctScore;
     document.getElementById('retry-score-speech').textContent = retryScore;
