@@ -1,138 +1,188 @@
-// CÜMLE OYUNU MANTIK DOSYASI
-const ALL_WORD_STAGES = [
-    // TEMEL CÜMLE AŞAMASI 1 (Günlük konuşma)
-    [
-        { ar: 'أريد كوب قهوة', tr: 'Bir fincan kahve istiyorum' },
-        { ar: 'كم سعر هذا؟', tr: 'Bunun fiyatı ne kadar?' },
-        { ar: 'أين الحمام؟', tr: 'Banyo nerede?' },
-        { ar: 'لا أفهم ماذا تقول.', tr: 'Ne dediğini anlamıyorum.' },
-    ],
-    // ORTA CÜMLE AŞAMASI 2 (Duygular ve Fikirler)
-    [
-        { ar: 'أشعر بالملل قليلاً اليوم.', tr: 'Bugün biraz sıkılmış hissediyorum.' },
-        { ar: 'يجب أن أذهب إلى العمل الآن.', tr: 'Şimdi işe gitmem gerekiyor.' },
-        { ar: 'أفضل القراءة في المكتبة.', tr: 'Kütüphanede okumayı tercih ederim.' },
-        { ar: 'ما رأيك في هذا الكتاب الجديد؟', tr: 'Bu yeni kitap hakkında ne düşünüyorsun?' },
-    ],
-    // İLERİ CÜMLE AŞAMASI 3 (Neden-Sonuç ve Soyut)
-    [
-        { ar: 'هدفي هو تعلم اللغة العربية.', tr: 'Hedefim Arapça dilini öğrenmek.' },
-        { ar: 'بسبب المطر، ألغينا السفر إلى المدينة.', tr: 'Yağmur nedeniyle şehre seyahati iptal ettik.' },
-        { ar: 'على الرغم من الصعوبة، واصلنا التفكير.', tr: 'Zorluğa rağmen düşünmeye devam ettik.' },
-        { ar: 'من المهم أن تكون سعيداً ومختلفاً.', tr: 'Mutlu ve farklı olmak önemlidir.' },
-    ]
-];
+// ==========================================================
+// CÜMLE EŞLEŞTİRME OYUNU
+// ==========================================================
 
-// OYUN MANTIĞI (Kelime.js ile aynı mantık)
-let currentStage = 0; 
+// Yeni Veri Çekme Yapısı (Tüm JS dosyalarında aynı)
+let ALL_WORDS_DATA = [];
+let ALL_SENTENCES_DATA = [];
+let ALL_FILL_SENTENCES = [];
+
+async function loadData() {
+    try {
+        const response = await fetch('data.json');
+        if (!response.ok) {
+            throw new Error(`HTTP hata kodu: ${response.status}`);
+        }
+        const data = await response.json();
+        ALL_WORDS_DATA = data.kelimeler;
+        ALL_SENTENCES_DATA = data.cumleler;
+        ALL_FILL_SENTENCES = data.eksik_kelime_cumleleri;
+        console.log("Veri başarıyla yüklendi. Toplam cümle:", ALL_SENTENCES_DATA.length);
+        
+        startGame(); 
+
+    } catch (error) {
+        console.error("Veri yüklenirken hata oluştu:", error);
+        alert("Üzgünüz, oyun verileri yüklenemedi. Lütfen sayfayı yenileyin.");
+    }
+}
+
+// Oyun Değişkenleri
 const gameContainer = document.querySelector('.game-container');
-const matchedPairsDisplay = document.getElementById('matched-pairs');
 const stageDisplay = document.getElementById('current-stage');
+const matchedPairsDisplay = document.getElementById('matched-pairs');
 
-let flippedCards = []; 
-let isBoardLocked = false; 
-let matchedPairs = 0; 
-let isSpeaking = false;
+let cards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let currentStage = 1;
+const CARDS_PER_STAGE = 8; // Her aşamada 4 çift (8 kart)
 
-function speak(text, lang) {
+// Seslendirme Fonksiyonu
+function speak(text, lang = 'ar-SA') {
     if (!('speechSynthesis' in window)) return;
-    isSpeaking = true; 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
-    utterance.onend = () => { isSpeaking = false; };
-    speechSynthesis.cancel();
+    // Cümleler için seslendirme hızını biraz düşürebiliriz
+    utterance.rate = 0.9; 
     speechSynthesis.speak(utterance);
 }
 
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]]; 
+// Oyunu Başlatma
+function startGame() {
+    const filteredSentences = ALL_SENTENCES_DATA.filter(item => item.seviye > 0);
+    
+    if (filteredSentences.length === 0) {
+        gameContainer.innerHTML = "Şu an oynanabilir cümle yok.";
+        return;
     }
-}
-
-function createBoard() {
-    gameContainer.innerHTML = ''; 
-    if (!gameContainer.classList.contains('sentence-mode')) {
-        gameContainer.classList.add('sentence-mode');
+    
+    // Rastgele 4 çift cümle seç (4 Arapça, 4 Türkçe)
+    let stageSentences = [];
+    
+    // Eğer o seviye için yeterli cümle varsa o seviyedeki cümlelerden seç
+    const sentencesForCurrentStage = filteredSentences.filter(item => item.seviye === currentStage);
+    
+    // Eğer o seviyede yeterli cümle yoksa, kalan tüm cümlelerden seç
+    const pool = sentencesForCurrentStage.length >= (CARDS_PER_STAGE / 2) ? sentencesForCurrentStage : filteredSentences;
+    
+    // Rastgele 4 cümle (4 çift) seçme
+    while (stageSentences.length < (CARDS_PER_STAGE / 2) && pool.length > 0) {
+        const randomIndex = Math.floor(Math.random() * pool.length);
+        stageSentences.push(pool.splice(randomIndex, 1)[0]);
+    }
+    
+    if (stageSentences.length < 4) {
+        gameContainer.innerHTML = '<h2>Tebrikler! Tüm cümle seviyelerini bitirdiniz!</h2><a href="index.html" class="menu-button match-game" style="margin-top:20px;">Ana Menüye Dön</a>';
+        return;
     }
 
-    const wordPairs = ALL_WORD_STAGES[currentStage];
-    let currentStageWords = [];
-    wordPairs.forEach(pair => {
-        currentStageWords.push({ content: pair.ar, type: pair.ar, lang: 'ar-SA' }); 
-        currentStageWords.push({ content: pair.tr, type: pair.ar, lang: 'tr-TR' }); 
+    // Seçilen 4 çift cümleyi kartlara dönüştürme (8 kart)
+    cards = [];
+    stageSentences.forEach((sentence, index) => {
+        // Arapça kart
+        cards.push({
+            id: index, 
+            content: sentence.ar, 
+            lang: 'ar-SA', 
+            matchId: index,
+            isMatched: false
+        });
+        // Türkçe kart
+        cards.push({
+            id: index, 
+            content: sentence.tr, 
+            lang: 'tr-TR', 
+            matchId: index,
+            isMatched: false
+        });
     });
 
-    shuffle(currentStageWords); 
-    matchedPairs = 0; 
-    matchedPairsDisplay.textContent = matchedPairs;
-    stageDisplay.textContent = currentStage + 1; 
+    // Kartları karıştır
+    cards.sort(() => Math.random() - 0.5);
 
-    currentStageWords.forEach(cardData => {
+    // Kartları ekranda göster
+    renderCards();
+    updateScoreBoard();
+}
+
+// Kartları Ekrana Çizme (Aynı fonksiyon)
+function renderCards() {
+    gameContainer.innerHTML = '';
+    cards.forEach(card => {
         const cardElement = document.createElement('div');
-        cardElement.classList.add('card');
-        cardElement.textContent = '?'; 
-        cardElement.dataset.content = cardData.content; 
-        cardElement.dataset.type = cardData.type; 
-        cardElement.dataset.lang = cardData.lang; 
-        cardElement.addEventListener('click', flipCard);
+        cardElement.className = 'card';
+        cardElement.textContent = card.content;
+        cardElement.dataset.matchId = card.matchId;
+        cardElement.dataset.lang = card.lang; 
+        
+        // Cümle kartları için font boyutu ayarı
+        cardElement.style.fontSize = (card.lang === 'ar-SA' || card.content.length > 20) ? '18px' : '22px';
+
+        cardElement.addEventListener('click', () => handleCardClick(cardElement, card));
         gameContainer.appendChild(cardElement);
     });
 }
 
-function flipCard() {
-    if (isBoardLocked || this.classList.contains('flipped') || this.classList.contains('matched') || isSpeaking) return;
-    this.textContent = this.dataset.content;
-    this.classList.add('flipped');
-    speak(this.dataset.content, this.dataset.lang);
-    flippedCards.push(this);
+// Kart Tıklama İşlemi
+function handleCardClick(element, data) {
+    if (element.classList.contains('flipped') || element.classList.contains('matched') || flippedCards.length === 2) {
+        return;
+    }
+
+    element.classList.add('flipped');
+    flippedCards.push({element, data});
+    
+    // Arapça kartı seslendir
+    if(data.lang === 'ar-SA') {
+        speak(data.content, 'ar-SA');
+    }
 
     if (flippedCards.length === 2) {
-        isBoardLocked = true; 
-        checkForMatch();
+        setTimeout(checkForMatch, 1000); 
     }
 }
 
+// Eşleşmeyi Kontrol Etme (Aynı fonksiyon)
 function checkForMatch() {
     const [card1, card2] = flippedCards;
 
-    if (card1.dataset.type === card2.dataset.type) {
-        card1.classList.add('matched');
-        card2.classList.add('matched');
-        card1.classList.remove('flipped');
-        card2.classList.remove('flipped');
+    if (card1.data.matchId === card2.data.matchId) {
+        // Eşleşti!
+        card1.element.classList.add('matched');
+        card2.element.classList.add('matched');
+        card1.element.classList.remove('flipped');
+        card2.element.classList.remove('flipped');
         matchedPairs++;
-        matchedPairsDisplay.textContent = matchedPairs;
+        updateScoreBoard();
 
-        if (matchedPairs === (ALL_WORD_STAGES[currentStage].length)) {
-            if (currentStage < ALL_WORD_STAGES.length - 1) {
-                currentStage++;
-                setTimeout(() => {
-                    alert(`Tebrikler! ${currentStage + 1}. Cümle Aşamasına geçiliyor.`);
-                    createBoard(); 
-                }, 1500);
-            } else {
-                setTimeout(() => {
-                    alert('TEBRİKLER! Tüm Arapça eğitimini başarıyla bitirdiniz!');
-                    window.location.href = 'index.html'; 
-                }, 1500);
-            }
+        if (matchedPairs === (CARDS_PER_STAGE / 2)) {
+            // Aşama bitti
+            setTimeout(nextStage, 1500);
         }
-        resetBoard(); 
     } else {
-        setTimeout(() => {
-            card1.classList.remove('flipped');
-            card2.classList.remove('flipped');
-            card1.textContent = '?'; 
-            card2.textContent = '?'; 
-            resetBoard(); 
-        }, 1000); 
+        // Eşleşmedi, kartları geri çevir
+        card1.element.classList.remove('flipped');
+        card2.element.classList.remove('flipped');
     }
+
+    flippedCards = [];
 }
 
-function resetBoard() {
-    [flippedCards, isBoardLocked] = [[], false];
+// Aşama İlerletme
+function nextStage() {
+    currentStage++;
+    matchedPairs = 0;
+    
+    // Yeni aşamayı başlat
+    startGame();
 }
 
-createBoard();
+// Puan Tablosunu Güncelleme
+function updateScoreBoard() {
+    stageDisplay.textContent = currentStage;
+    matchedPairsDisplay.textContent = matchedPairs;
+}
+
+// Sayfa Yüklendiğinde veriyi çek ve oyunu başlat
+loadData();
