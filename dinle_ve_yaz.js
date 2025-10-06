@@ -1,15 +1,13 @@
-// dinle_ve_yaz.js - Dinle ve Yaz Oyununun Mantığı
+// dinle_ve_yaz.js - Dinle ve Yaz Oyununun Mantığı (Son Versiyon)
 
 let items = [];
 let currentItem = null;
 let correctScore = 0;
 let wrongScore = 0;
-let useWords = true; // Başlangıçta kelimeleri kullan
 
 document.addEventListener('DOMContentLoaded', () => {
     loadData().then(data => {
         if (data) {
-            // Kelime ve cümleleri birleştir
             items = [...data.kelimeler, ...data.cumleler];
             if (items.length === 0) {
                 document.getElementById('user-input').placeholder = "Yeterli sesli içerik bulunamadı.";
@@ -32,9 +30,7 @@ function setupListeners() {
 
 function nextItem() {
     if (items.length === 0) {
-        document.getElementById('feedback').textContent = `Oyun Bitti! Skor: ${correctScore} Doğru, ${wrongScore} Yanlış`;
-        document.getElementById('speaker-button').disabled = true;
-        document.getElementById('check-button').disabled = true;
+        endGame();
         return;
     }
 
@@ -42,22 +38,19 @@ function nextItem() {
     document.getElementById('user-input').value = '';
     document.getElementById('feedback').textContent = 'Dinle ve Türkçe karşılığını yaz.';
     document.getElementById('feedback').style.color = 'var(--dark-text)';
-
-    // Otomatik seslendirme (Bazı tarayıcılar kısıtlayabilir)
+    document.getElementById('check-button').disabled = false;
+    document.getElementById('speaker-button').disabled = false;
+    
     speakCurrentItem();
 }
 
 function speakCurrentItem() {
     if (!currentItem) return;
 
-    // SpeechSynthesis API (Metni sese dönüştürme)
     const utterance = new SpeechSynthesisUtterance(currentItem.ar);
-    utterance.lang = 'ar-SA'; // Arapça dil kodu
-
-    // En yavaş hızı ayarla (Daha anlaşılır olması için)
+    utterance.lang = 'ar-SA'; 
     utterance.rate = 0.8; 
 
-    // Oynatma
     window.speechSynthesis.speak(utterance);
 }
 
@@ -72,20 +65,42 @@ function checkAnswer() {
         return;
     }
 
-    // Basit kontrol (Kelimeleri ayırarak kontrol etmek daha iyi olur ama basitlik için tam eşleşme)
-    if (userInput === correctTranslation || correctTranslation.includes(userInput)) {
+    if (userInput === correctTranslation) {
         correctScore++;
-        feedback.textContent = `Doğru! Arapçası: ${currentItem.ar} - Türkçesi: ${currentItem.tr}`;
+        feedback.innerHTML = `✅ **Doğru!** Arapçası: <span style="font-weight: bold; direction: rtl; display: inline-block;">${currentItem.ar}</span> - Türkçesi: ${currentItem.tr}`;
         feedback.style.color = 'var(--success-green)';
     } else {
         wrongScore++;
-        feedback.textContent = `Yanlış. Doğru cevap: ${currentItem.tr}. Arapçası: ${currentItem.ar}`;
+        feedback.innerHTML = `❌ **Yanlış.** Doğru cevap: **${currentItem.tr}**. Arapçası: <span style="font-weight: bold; direction: rtl; display: inline-block;">${currentItem.ar}</span>`;
         feedback.style.color = 'red';
     }
 
     document.getElementById('correct-score-listen').textContent = correctScore;
     document.getElementById('wrong-score-listen').textContent = wrongScore;
+    
+    document.getElementById('check-button').disabled = true;
 
-    // Kontrol sonrası bir sonraki kelimeye geç
-    setTimeout(nextItem, 2500);
+    setTimeout(nextItem, 3000);
+}
+
+function endGame() {
+    const feedback = document.getElementById('feedback');
+    const container = document.querySelector('.listen-game-container');
+    
+    feedback.innerHTML = "";
+    container.innerHTML = `
+        <h2>Oyun Bitti!</h2>
+        <p>Skor: ${correctScore} Doğru, ${wrongScore} Yanlış</p>
+        <button id="restart-button" class="type-button" style="background-color: var(--primary-blue);">Baştan Başla (Tekrar Oyna)</button>
+    `;
+    
+    // İlerleme Kaydı
+    localStorage.setItem('listen_completed', 'true');
+    
+    document.getElementById('restart-button').addEventListener('click', restartGame);
+}
+
+function restartGame() {
+    // Sayfayı yeniden yükleyerek oyunu baştan başlatıyoruz
+    window.location.reload(); 
 }
