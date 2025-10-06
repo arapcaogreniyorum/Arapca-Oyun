@@ -97,9 +97,11 @@ function checkChoice(button, correctAnswer) {
 }
 
 function endGame() {
+// eksik_kelime.js dosyasından:
+function endGame() {
     const sentenceDisplay = document.getElementById('sentence-display');
     const translationDisplay = document.getElementById('translation-display');
-    const choiceOptions = document.getElementById('choice-options');
+    const choiceOptions = document.getElementById('choice-options'); // Hedef div
 
     sentenceDisplay.innerHTML = `Oyun Bitti! Skor: ${correctScore} Doğru, ${wrongScore} Yanlış`;
     translationDisplay.textContent = "Tebrikler, tüm cümleleri tamamladınız!";
@@ -107,13 +109,15 @@ function endGame() {
     // İlerleme Kaydı
     localStorage.setItem('fill_completed', 'true');
 
-    // Tekrar Oyna Butonu
+    // Tekrar Oyna Butonu (choiceOptions div'ini kullanarak butonu ekliyoruz)
     choiceOptions.innerHTML = `
-        <button id="restart-button" class="type-button" style="background-color: var(--primary-blue);">Baştan Başla (Tekrar Oyna)</button>
+        <button id="restart-button" class="choice-button" style="background-color: var(--primary-blue);">Baştan Başla (Tekrar Oyna)</button>
     `;
     
+    // BUTON SINIFINI choice-button olarak güncelledik
     document.getElementById('restart-button').addEventListener('click', restartGame);
 }
+
 
 function restartGame() {
     correctScore = 0;
