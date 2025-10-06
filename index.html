@@ -6,21 +6,64 @@
     <title>Arapça Oyunlarla Dil Öğrenme Platformu - Hemen Başla!</title>
     <link rel="stylesheet" href="style.css"> 
     <style>
-        /* Menü ve Renk Stilleri buraya gelir (style.css'te olanlar hariç) */
-        .menu-container { display: flex; flex-direction: column; gap: 20px; width: 90%; max-width: 500px; margin-top: 30px; }
-        .menu-item { display: block; background-color: var(--primary-blue); border-radius: 10px; text-decoration: none; color: white; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); overflow: hidden; }
-        .menu-item:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); opacity: 0.95; }
-        .menu-button-title { padding: 15px 20px 5px 20px; font-size: 20px; font-weight: bold; }
-        .menu-button-desc { padding: 0 20px 15px 20px; font-size: 14px; color: rgba(255, 255, 255, 0.8); }
+        /* Sadece menü layout'u için ekstra stil */
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 90%;
+            max-width: 500px;
+            margin-top: 30px;
+        }
+        .menu-item {
+            display: block;
+            background-color: var(--primary-blue); 
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden; 
+        }
+        .menu-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0.95;
+        }
+        .menu-button-title {
+            padding: 15px 20px 5px 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .menu-button-desc {
+            padding: 0 20px 15px 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        /* Renkler */
         .match-game { background-color: var(--primary-blue); } 
         .type-game { background-color: var(--secondary-orange); } 
         .fill-game { background-color: var(--success-green); } 
         .listen-game { background-color: var(--listen-purple); } 
-        /* UYARI KUTUSU STİLİ */
-        #app-warning { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .warning-box { background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); max-width: 350px; text-align: center; }
+        
+        /* Telaffuz oyunu için yeni renk (örnek olarak birincil maviyi kullandım) */
+        .speech-game { background-color: var(--primary-blue); } 
+
+        /* UYARI KUTUSU STİLİ (utility.js ile yönetiliyor) */
+        #app-warning { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: rgba(0, 0, 0, 0.7); display: none; /* JS ile gösterilecek */
+            justify-content: center; align-items: center; z-index: 1000; 
+        }
+        .warning-box { 
+            background-color: white; padding: 30px; border-radius: 10px; 
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); max-width: 350px; text-align: center; 
+        }
         .warning-box h2 { color: red; margin-top: 0; }
-        .warning-box button { background-color: var(--primary-blue); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px; font-weight: bold; }
+        .warning-box button { 
+            background-color: var(--primary-blue); color: white; border: none; 
+            padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 15px; font-weight: bold; 
+        }
     </style>
 </head>
 <body onload="checkAndDisplayWarning()">
@@ -28,7 +71,7 @@
     <div id="app-warning">
         <div class="warning-box">
             <h2>⚠️ ÖNEMLİ UYARI</h2>
-            <p>Eğer bu sayfayı **Instagram, TikTok veya Facebook** gibi uygulamaların içindeki gömülü tarayıcıdan açtıysanız, cihazınızın güvenlik kısıtlamaları nedeniyle **seslendirmeler çalışmayabilir.**</p>
+            <p>Eğer bu sayfayı **Instagram, TikTok veya Facebook** gibi uygulamaların içindeki gömülü tarayıcıdan açtıysanız, cihazınızın güvenlik kısıtlamaları nedeniyle **seslendirmeler ve konuşma tanıma özelliği çalışmayabilir.**</p>
             <p>Sorunsuz bir deneyim için, lütfen bağlantıyı kopyalayıp **Chrome, Safari veya Firefox** gibi harici bir tarayıcıda açın.</p>
             <button>Tamam, Anladım</button>
         </div>
@@ -40,31 +83,35 @@
     </header>
 
     <div class="menu-container">
+        
         <a href="kelime_eslestirme.html" class="menu-item match-game">
             <div class="menu-button-title">1. Kelime & Cümle Eşleştirme</div>
             <div class="menu-button-desc">Hafızanı güçlendir. Kelime ve cümle çiftlerini eşleştirerek genel kelime dağarcığını artır.</div>
         </a>
+        
         <a href="kelime_tipi_avcisi.html" class="menu-item type-game">
             <div class="menu-button-title">2. Kelime Tipi Avcısı</div>
             <div class="menu-button-desc">Gramer refleksini hızlandır. Kelimelerin İsim, Fiil veya Sıfat olduğunu saniyeler içinde belirle.</div>
         </a>
+        
         <a href="eksik_kelime.html" class="menu-item fill-game">
             <div class="menu-button-title">3. Eksik Kelimeyi Bul</div>
             <div class="menu-button-desc">Bağlam içinde öğren. Cümledeki eksik Arapça kelimeyi doğru seçenekle tamamla.</div>
         </a>
+        
         <a href="dinle_ve_yaz.html" class="menu-item listen-game">
             <div class="menu-button-title">4. Dinle ve Yaz</div>
             <div class="menu-button-desc">Telaffuz ve üretimi geliştir. Duyduğun Arapça ifadeyi Türkçe karşılığı ile yaz.</div>
         </a>
-        <a href="telaffuz_pratigi.html" class="menu-item listen-game">
-    <div class="menu-button-title">5. Telaffuz Pratiği (YENİ)</div>
-    <div class="menu-button-desc">Arapça okuma becerini test et. Cümleyi sesli oku ve sistemin seni tanımasını sağla.</div>
-</a>
-
+        
+        <a href="telaffuz_pratigi.html" class="menu-item speech-game" style="background-color: var(--listen-purple);">
+            <div class="menu-button-title">5. Telaffuz Pratiği (YENİ)</div>
+            <div class="menu-button-desc">Arapça okuma becerini test et. Cümleyi sesli oku ve sistemin seni tanımasını sağla.</div>
+        </a>
     </div>
     
     <footer class="footer">
-        <p>&copy; 2024 Arapça Öğrenme Oyunları</p>
+        <p>&copy; 2025 Arapça Öğrenme Oyunları</p>
         <div class="social-icon">
             <a href="https://instagram.com/Coc.aslan26" target="_blank" title="Instagram Sayfamız">📸 Instagram</a>
         </div>
