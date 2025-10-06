@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arapça Oyunlarla Dil Öğrenimi</title>
+    <title>Arapça Oyunlarla Dil Öğrenme Platformu - Hemen Başla!</title>
     <link rel="stylesheet" href="style.css"> 
     <style>
-        /* Sadece menü layout'u, geri kalan stil style.css'te */
+        /* Sadece menü layout'u için ekstra stil */
         .menu-container {
             display: flex;
             flex-direction: column;
@@ -15,11 +15,32 @@
             max-width: 500px;
             margin-top: 30px;
         }
-        .menu-button {
-            padding: 25px;
-            font-size: 20px;
-            text-align: center;
+        .menu-item {
+            display: block;
+            background-color: var(--primary-blue); 
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden; /* Kenar yuvarlaklığını korumak için */
         }
+        .menu-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0.95;
+        }
+        .menu-button-title {
+            padding: 15px 20px 5px 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .menu-button-desc {
+            padding: 0 20px 15px 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        /* Renkler */
         .match-game { background-color: var(--primary-blue); } 
         .type-game { background-color: var(--secondary-orange); } 
         .fill-game { background-color: var(--success-green); } 
@@ -34,11 +55,36 @@
     </header>
 
     <div class="menu-container">
-        <a href="kelime_eslestirme.html" class="menu-button match-game">1. Kelime & Cümle Eşleştirme (Geniş Kapsam)</a>
-        <a href="kelime_tipi_avcisi.html" class="menu-button type-game">2. Kelime Tipi Avcısı (Hızlı Gramer Refleksi)</a>
-        <a href="eksik_kelime.html" class="menu-button fill-game">3. Eksik Kelimeyi Bul (Arapça Bağlam & Akıcılık)</a>
-        <a href="dinle_ve_yaz.html" class="menu-button listen-game">4. Dinle ve Yaz (Telaffuz ve Üretim)</a>
+        
+        <a href="kelime_eslestirme.html" class="menu-item match-game">
+            <div class="menu-button-title">1. Kelime & Cümle Eşleştirme</div>
+            <div class="menu-button-desc">Hafızanı güçlendir. Kelime ve cümle çiftlerini eşleştirerek genel kelime dağarcığını artır.</div>
+        </a>
+        
+        <a href="kelime_tipi_avcisi.html" class="menu-item type-game">
+            <div class="menu-button-title">2. Kelime Tipi Avcısı</div>
+            <div class="menu-button-desc">Gramer refleksini hızlandır. Kelimelerin İsim, Fiil veya Sıfat olduğunu saniyeler içinde belirle.</div>
+        </a>
+        
+        <a href="eksik_kelime.html" class="menu-item fill-game">
+            <div class="menu-button-title">3. Eksik Kelimeyi Bul</div>
+            <div class="menu-button-desc">Bağlam içinde öğren. Cümledeki eksik Arapça kelimeyi doğru seçenekle tamamla.</div>
+        </a>
+        
+        <a href="dinle_ve_yaz.html" class="menu-item listen-game">
+            <div class="menu-button-title">4. Dinle ve Yaz</div>
+            <div class="menu-button-desc">Telaffuz ve üretimi geliştir. Duyduğun Arapça ifadeyi Türkçe karşılığı ile yaz.</div>
+        </a>
     </div>
+    
+    <footer class="footer">
+        <p>&copy; 2024 Arapça Öğrenme Oyunları</p>
+        <div class="social-icon">
+            <a href="https://instagram.com/Coc.aslan26" target="_blank" title="Instagram Sayfamız">
+                📸 Instagram
+            </a>
+        </div>
+    </footer>
 
 </body>
 </html>
