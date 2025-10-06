@@ -1,184 +1,154 @@
-// ==========================================================
-// KELİME EŞLEŞTİRME OYUNU
-// ==========================================================
-
-// Yeni Veri Çekme Yapısı (Tüm JS dosyalarında aynı)
-let ALL_WORDS_DATA = [];
-let ALL_SENTENCES_DATA = [];
-let ALL_FILL_SENTENCES = [];
-
-async function loadData() {
-    try {
-        const response = await fetch('data.json');
-        if (!response.ok) {
-            throw new Error(`HTTP hata kodu: ${response.status}`);
-        }
-        const data = await response.json();
-        ALL_WORDS_DATA = data.kelimeler;
-        ALL_SENTENCES_DATA = data.cumleler;
-        ALL_FILL_SENTENCES = data.eksik_kelime_cumleleri;
-        console.log("Veri başarıyla yüklendi. Toplam kelime:", ALL_WORDS_DATA.length);
-        
-        startGame(); 
-
-    } catch (error) {
-        console.error("Veri yüklenirken hata oluştu:", error);
-        alert("Üzgünüz, oyun verileri yüklenemedi. Lütfen sayfayı yenileyin.");
-    }
-}
-
-// Oyun Değişkenleri
-const gameContainer = document.querySelector('.game-container');
-const stageDisplay = document.getElementById('current-stage');
-const matchedPairsDisplay = document.getElementById('matched-pairs');
+// kelime_eslestirme.js - Kelime ve Cümle Eşleştirme Oyununun Mantığı
 
 let cards = [];
-let flippedCards = [];
+let firstCard = null;
+let secondCard = null;
+let lockBoard = false;
 let matchedPairs = 0;
 let currentStage = 1;
-const CARDS_PER_STAGE = 12; // Her aşamada 6 çift (12 kart)
+const pairsToMatch = 6;
 
-// Seslendirme Fonksiyonu
-function speak(text, lang = 'ar-SA') {
-    if (!('speechSynthesis' in window)) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    speechSynthesis.speak(utterance);
-}
+document.addEventListener('DOMContentLoaded', () => {
+    // utility.js'teki loadData'yı kullanarak veriyi çek
+    loadData().then(data => {
+        if (data) {
+            allData = data;
+            initializeGame();
+        }
+    });
+});
 
-// Oyunu Başlatma
-function startGame() {
-    // Sadece Kelime seviyeleri için filtreleme yapıyoruz. (Seviye=0 cümledir)
-    const filteredWords = ALL_WORDS_DATA.filter(item => item.seviye > 0);
+function initializeGame() {
+    matchedPairs = 0;
+    document.getElementById('matched-pairs').textContent = `${matchedPairs}/${pairsToMatch}`;
+    document.getElementById('current-stage').textContent = currentStage;
     
-    if (filteredWords.length === 0) {
-        gameContainer.innerHTML = "Şu an oynanabilir kelime yok. Lütfen 'cumle.html'e geçin.";
-        return;
+    let sourceArray;
+    let maxElements;
+
+    if (currentStage === 1) {
+        // Kelime eşleştirme için ilk 12 kelimeyi al
+        sourceArray = allData.kelimeler.slice(0, 12); 
+    } else {
+        // Cümle eşleştirme için ilk 6 cümleyi al
+        sourceArray = allData.cumleler.slice(0, 6);
     }
     
-    // Rastgele 6 çift kelime seç
-    let stageWords = [];
-    
-    // Eğer o seviye için yeterli kelime varsa o seviyedeki kelimelerden seç
-    const wordsForCurrentStage = filteredWords.filter(item => item.seviye === currentStage);
-    
-    // Eğer o seviyede yeterli kelime yoksa, kalan tüm kelimelerden seç
-    const pool = wordsForCurrentStage.length >= (CARDS_PER_STAGE / 2) ? wordsForCurrentStage : filteredWords;
-    
-    // Rastgele 6 kelime (6 çift) seçme
-    while (stageWords.length < (CARDS_PER_STAGE / 2) && pool.length > 0) {
-        const randomIndex = Math.floor(Math.random() * pool.length);
-        stageWords.push(pool.splice(randomIndex, 1)[0]);
-    }
-    
-    if (stageWords.length < 6) {
-        // Yeterli kelime yoksa cümle oyununa yönlendir
-        gameContainer.innerHTML = '<h2>Tebrikler! Tüm kelime seviyelerini bitirdiniz!</h2><a href="cumle.html" class="menu-button match-game" style="margin-top:20px;">Cümle Eşleştirmeye Geç</a>';
+    // Yetersiz veri kontrolü
+    if (sourceArray.length < pairsToMatch) {
+        document.getElementById('match-game-container').innerHTML = `<p style="text-align:center;">Tebrikler! Tüm ${currentStage === 1 ? 'kelime' : 'cümle'} seviyelerini bitirdiniz.</p>`;
         return;
     }
 
-    // Seçilen 6 çift kelimeyi kartlara dönüştürme (12 kart)
+    // Seçilen 6 çifti hazırla ve kartları oluştur
+    const selectedPairs = sourceArray.slice(0, pairsToMatch);
     cards = [];
-    stageWords.forEach((word, index) => {
+
+    selectedPairs.forEach((item, index) => {
         // Arapça kart
-        cards.push({
-            id: index, 
-            content: word.ar, 
-            lang: 'ar-SA', 
-            matchId: index,
-            isMatched: false
-        });
+        cards.push({ id: index, content: item.ar, lang: 'ar-SA', type: 'arabic' });
         // Türkçe kart
-        cards.push({
-            id: index, 
-            content: word.tr, 
-            lang: 'tr-TR', 
-            matchId: index,
-            isMatched: false
-        });
+        cards.push({ id: index, content: item.tr, lang: 'tr-TR', type: 'turkish' });
     });
 
-    // Kartları karıştır
-    cards.sort(() => Math.random() - 0.5);
-
-    // Kartları ekranda göster
+    shuffle(cards);
     renderCards();
-    updateScoreBoard();
 }
 
-// Kartları Ekrana Çizme
 function renderCards() {
-    gameContainer.innerHTML = '';
+    const gameContainer = document.getElementById('match-game-container');
+    gameContainer.innerHTML = ''; // Önceki kartları temizle
+
     cards.forEach(card => {
         const cardElement = document.createElement('div');
-        cardElement.className = 'card';
-        cardElement.textContent = card.content;
-        cardElement.dataset.matchId = card.matchId;
-        cardElement.dataset.lang = card.lang; 
-        cardElement.addEventListener('click', () => handleCardClick(cardElement, card));
+        cardElement.classList.add('card');
+        cardElement.setAttribute('data-id', card.id);
+        cardElement.setAttribute('data-lang', card.lang);
+        cardElement.textContent = '?'; // Başlangıçta soru işareti
+        cardElement.addEventListener('click', flipCard);
         gameContainer.appendChild(cardElement);
     });
 }
 
-// Kart Tıklama İşlemi
-function handleCardClick(element, data) {
-    if (element.classList.contains('flipped') || element.classList.contains('matched') || flippedCards.length === 2) {
+function flipCard() {
+    if (lockBoard) return;
+    if (this === firstCard) return;
+
+    // Kartı çevir ve içeriğini göster
+    this.classList.add('flipped');
+    const cardData = cards.find(c => c.content === this.dataset.content);
+    if(cardData) this.textContent = cardData.content;
+    
+    // Kart içeriğini data-content'e kaydet
+    const cardIndex = cards.findIndex(c => c.content === this.textContent);
+    this.setAttribute('data-content', cards[cardIndex].content);
+
+    if (!firstCard) {
+        firstCard = this;
         return;
     }
 
-    element.classList.add('flipped');
-    flippedCards.push({element, data});
-    
-    // Arapça kartı seslendir
-    if(data.lang === 'ar-SA') {
-        speak(data.content, 'ar-SA');
-    }
-
-    if (flippedCards.length === 2) {
-        setTimeout(checkForMatch, 1000); 
-    }
+    secondCard = this;
+    lockBoard = true; 
+    checkForMatch();
 }
 
-// Eşleşmeyi Kontrol Etme
 function checkForMatch() {
-    const [card1, card2] = flippedCards;
+    // Eşleşme kontrolü: id'ler aynı, ancak dil tipleri farklı olmalı (Türkçe-Arapça)
+    const isMatch = firstCard.dataset.id === secondCard.dataset.id && firstCard.dataset.lang !== secondCard.dataset.lang;
 
-    if (card1.data.matchId === card2.data.matchId) {
-        // Eşleşti!
-        card1.element.classList.add('matched');
-        card2.element.classList.add('matched');
-        card1.element.classList.remove('flipped');
-        card2.element.classList.remove('flipped');
-        matchedPairs++;
-        updateScoreBoard();
-
-        if (matchedPairs === (CARDS_PER_STAGE / 2)) {
-            // Aşama bitti
-            setTimeout(nextStage, 1500);
-        }
+    if (isMatch) {
+        disableCards();
     } else {
-        // Eşleşmedi, kartları geri çevir
-        card1.element.classList.remove('flipped');
-        card2.element.classList.remove('flipped');
+        unflipCards();
     }
-
-    flippedCards = [];
 }
 
-// Aşama İlerletme
+function disableCards() {
+    firstCard.removeEventListener('click', flipCard);
+    secondCard.removeEventListener('click', flipCard);
+
+    firstCard.classList.add('matched');
+    secondCard.classList.add('matched');
+
+    matchedPairs++;
+    document.getElementById('matched-pairs').textContent = `${matchedPairs}/${pairsToMatch}`;
+
+    resetBoard();
+
+    if (matchedPairs === pairsToMatch) {
+        setTimeout(nextStage, 1000);
+    }
+}
+
+function unflipCards() {
+    setTimeout(() => {
+        // Kart içeriğini tekrar gizle
+        firstCard.textContent = '?';
+        secondCard.textContent = '?';
+
+        firstCard.classList.remove('flipped');
+        secondCard.classList.remove('flipped');
+        resetBoard();
+    }, 1000);
+}
+
+function resetBoard() {
+    [firstCard, secondCard, lockBoard] = [null, null, false];
+}
+
 function nextStage() {
-    currentStage++;
-    matchedPairs = 0;
+    const gameContainer = document.getElementById('match-game-container');
+    gameContainer.innerHTML = `
+        <div style="text-align:center; padding: 20px;">
+            <h2>Tebrikler! Aşama ${currentStage} Tamamlandı!</h2>
+            <p>Yeni ve daha zorlu bir aşamaya geçiliyor...</p>
+        </div>
+    `;
     
-    // Yeni aşamayı başlat
-    startGame();
+    currentStage++;
+    
+    setTimeout(() => {
+        initializeGame();
+    }, 2000);
 }
-
-// Puan Tablosunu Güncelleme
-function updateScoreBoard() {
-    stageDisplay.textContent = currentStage;
-    matchedPairsDisplay.textContent = matchedPairs;
-}
-
-// Sayfa Yüklendiğinde veriyi çek ve oyunu başlat
-loadData();
