@@ -3,24 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelime Eşleştirme Oyunu</title>
+    <title>Arapça Eşleştirme Oyunu - Hafıza Pratiği</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Kartların temel stilini style.css'ten alıyoruz. */
+        /* Bu sayfa için özel stil yok, kartlar CSS'ten ve JS'ten yönetiliyor. */
+    </style>
 </head>
 <body>
 
     <header>
-        <h1>Kelime Eşleştirme</h1>
-        <p>Aynı anlama gelen Arapça ve Türkçe kartları eşleştir. Tüm seviyeleri bitirerek cümlelere geç!</p>
-        <a href="index.html" class="menu-button" style="background-color: #ccc; font-size: 14px; padding: 10px; width: 150px; display: inline-block; margin-top: 10px; border-radius: 5px; color: #333; text-decoration: none;">Ana Menüye Dön</a>
+        <h1>Arapça Eşleştirme Oyunu</h1>
+        <p>Arapça kelime ve cümleleri Türkçe karşılıklarıyla eşleştirerek hafızanı güçlendir. Seviye 1: Kelimeler, Seviye 2: Cümleler.</p>
     </header>
 
-    <section class="game-container">
-    </section>
-
     <div class="score-board">
-        Aşama: <span id="current-stage">1</span> | Eşleşen Çift: <span id="matched-pairs">0</span>
+        Aşama: <span id="current-stage">1</span> | Eşleşen Çift: <span id="matched-pairs">0</span>/6
     </div>
-    
+
+    <div class="game-container" id="match-game-container">
+        Oyun Yükleniyor...
+    </div>
+
+    <div class="controls">
+        <a href="index.html" class="menu-button" style="background-color: var(--secondary-orange);">Ana Menü</a>
+    </div>
+
     <script src="kelime_eslestirme.js"></script> 
+
+    <footer class="footer">
+        <p>&copy; 2024 Arapça Öğrenme Oyunları</p>
+    </footer>
 </body>
 </html>
