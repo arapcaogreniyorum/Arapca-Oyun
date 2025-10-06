@@ -1,4 +1,4 @@
-/* style.css - GÜNCEL EĞLENCELİ TEMA VE MOBİL UYUMLULUK */
+/* style.css - GÜNCEL EĞLENCELİ TEMA VE KESİN MOBİL UYUMLULUK */
 
 :root {
     /* Ana Renk Paleti */
@@ -12,7 +12,7 @@
 }
 
 * {
-    box-sizing: border-box; /* Tüm elementler için kutu modelini düzeltir */
+    box-sizing: border-box; 
 }
 
 body {
@@ -35,7 +35,7 @@ header {
 
 h1 {
     color: var(--primary-blue); 
-    font-size: 2.5rem; /* Başlık boyutunu mobil için ayarla */
+    font-size: 2.5rem; 
     margin-bottom: 10px;
 }
 
@@ -50,7 +50,7 @@ p {
     transition: all 0.3s ease;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
     border: none;
-    border-radius: 8px; /* Daha küçük radius */
+    border-radius: 8px; 
     cursor: pointer;
     color: white;
 }
@@ -66,71 +66,75 @@ p {
 .type-game-container, 
 .fill-game-container, 
 .listen-game-container,
-.match-game-container { /* Eşleştirme konteyneri de eklendi */
+.match-game-container {
     background-color: #ffffff;
     border-radius: 12px; 
     box-shadow: var(--card-shadow);
-    padding: 20px; /* Mobil için padding azaltıldı */
+    padding: 20px; 
     width: 100%;
     max-width: 800px; 
     margin-top: 10px;
     margin-bottom: 20px;
 }
 
-
-/* --- EŞLEŞTİRME OYUNU KARTLARI --- */
-.match-game-container { /* Sadece eşleştirme konteyneri için eklendi */
-    display: grid;
-    /* Masaüstü ve tabletler için temel ayar: 4 sütunlu düzen */
-    grid-template-columns: repeat(4, 1fr); 
-    gap: 15px; /* Boşluk azaltıldı */
-}
-
-.card {
+/* --- EŞLEŞTİRME OYUNU KARTLARI (SİZİN HTML'İNİZİ BAZ ALIR) --- */
+/* NOT: kelime_eslestirme.html'deki grid-template-columns: repeat(3, 1fr); kuralı 
+   bu dosyada daha genel bir yerde tanımlanmadığı için mobil kırılımı buna göre yapacağız. */
+.match-game-container {
+    /* Masaüstü ve tabletler için HTML'deki 3 sütunlu kuralı geçersiz kılmıyoruz */
+    gap: 10px;
+    margin-top: 20px;
     width: 100%;
-    min-width: 100px;
-    height: 130px; /* Masaüstü boyutu */
-    background-color: var(--primary-blue); 
+    max-width: 800px; 
+}
+.card {
+    background-color: var(--primary-blue);
     color: white;
-    font-size: 20px; 
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+    padding: 15px 5px;
     border-radius: 8px;
-    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px; 
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: all 0.3s;
+    transform-style: preserve-3d;
+    perspective: 1000px; 
     text-align: center;
-    padding: 10px;
 }
-
 .card.flipped {
-    background-color: #ffffff; 
-    color: var(--dark-text); 
-    border: 3px solid var(--primary-blue); 
-    box-shadow: var(--card-shadow);
-    transform: scale(1.02); 
-    font-size: 18px; 
+    background-color: var(--secondary-orange); /* HTML'inizdeki .flipped kuralını koruduk */
+    color: white;
+    transform: rotateY(0deg);
 }
-
 .card.matched {
-    background-color: #d4edda; 
-    color: var(--success-green); 
+    background-color: var(--success-green);
+    color: white;
     cursor: default;
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-    /* animation: pulse 1s ease-in-out; */
+    opacity: 0.8;
+    box-shadow: 0 0 10px rgba(0, 128, 0, 0.7);
 }
 
-/* Cümleler için Yazı Ayarı (Masaüstü) */
+/* Yazı Ayarı (Masaüstü) */
 .card[data-lang="tr-TR"] {
-    font-size: 16px; 
+    font-size: 1.0rem; 
 }
 .card[data-lang="ar-SA"] {
-    font-size: 24px;
+    font-size: 1.5rem;
 }
 
 
 /* --- SCORE BOARD --- */
+.score-info { /* score-info'yu da buraya taşıdık */
+    display: flex;
+    justify-content: space-around;
+    width: 80%;
+    max-width: 400px;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
 .score-board {
     margin-top: 15px;
     padding: 10px 20px;
@@ -207,16 +211,19 @@ p {
     header p {
         font-size: 0.9rem;
     }
+    .score-info {
+        font-size: 1rem;
+    }
     
     /* 2. Eşleştirme Oyununun Düzeni (KRİTİK ÇÖZÜM) */
     .match-game-container {
-        /* Yana kaymayı engellemek için 4 sütun yerine 2 sütuna indirildi */
-        grid-template-columns: repeat(2, 1fr); 
+        /* Yana kaymayı engellemek için 3 sütun yerine 2 sütuna indirildi */
+        grid-template-columns: repeat(2, 1fr) !important; 
         gap: 8px; 
     }
     .card {
         height: 75px; /* Kart yüksekliğini azalttık */
-        font-size: 0.9rem; /* Genel yazıyı küçülttük */
+        font-size: 0.9rem; 
         padding: 5px 2px; /* İç boşluğu azalttık */
     }
     .card[data-lang="tr-TR"] {
