@@ -1,77 +1,127 @@
-// DİNLE VE YAZ MANTIĞI: Genişletilmiş ve çeşitli cümleler
-const LISTEN_DATA = [
-    { ar: 'هل أنت طالب في الجامعة؟', tr: 'Üniversitede öğrenci misin?' },
-    { ar: 'القراءة مهمة لتطوير اللغة.', tr: 'Okuma, dil geliştirmek için önemlidir.' },
-    { ar: 'هل فكرت في السفر إلى المدينة؟', tr: 'Şehre seyahat etmeyi düşündün mü?' },
-    { ar: 'ساعدني معلمي في فهم الدرس.', tr: 'Öğretmenim dersi anlamama yardım etti.' },
-    { ar: 'الطعام الذي طبخته كان صحيحاً.', tr: 'Pişirdiğin yemek sağlıklıydı/doğruydu.' },
-    { ar: 'أين هو العمل الجديد الذي وجدته؟', tr: 'Bulduğun yeni iş nerede?' },
-    { ar: 'كتبت كتاباً كبيراً ومختلفاً.', tr: 'Büyük ve farklı bir kitap yazdım.' },
-    { ar: 'السائق كان سريعاً جداً.', tr: 'Sürücü çok hızlıydı.' },
-    { ar: 'هل تذكرت ما سألته؟', tr: 'Sorduğum şeyi hatırladın mı?' },
-    { ar: 'يجب أن نذهب إلى المكتبة صباحاً.', tr: 'Sabah kütüphaneye gitmeliyiz.' },
-];
+// ==========================================================
+// DİNLE VE YAZ OYUNU
+// ==========================================================
 
+// Yeni Veri Çekme Yapısı (Tüm JS dosyalarında aynı)
+let ALL_WORDS_DATA = [];
+let ALL_SENTENCES_DATA = [];
+let ALL_FILL_SENTENCES = [];
+
+async function loadData() {
+    try {
+        const response = await fetch('data.json');
+        if (!response.ok) {
+            throw new Error(`HTTP hata kodu: ${response.status}`);
+        }
+        const data = await response.json();
+        ALL_WORDS_DATA = data.kelimeler;
+        ALL_SENTENCES_DATA = data.cumleler;
+        ALL_FILL_SENTENCES = data.eksik_kelime_cumleleri;
+        console.log("Veri başarıyla yüklendi. Kelime sayısı:", ALL_WORDS_DATA.length);
+        
+        startGame(); 
+
+    } catch (error) {
+        console.error("Veri yüklenirken hata oluştu:", error);
+        alert("Üzgünüz, oyun verileri yüklenemedi. Lütfen sayfayı yenileyin.");
+    }
+}
+
+// Oyun Değişkenleri
 const speakerButton = document.getElementById('speaker-button');
-const userInput = document.getElementById('user-input');
 const checkButton = document.getElementById('check-button');
+const userInput = document.getElementById('user-input');
 const feedbackDisplay = document.getElementById('feedback');
 const correctScoreDisplay = document.getElementById('correct-score-listen');
 const wrongScoreDisplay = document.getElementById('wrong-score-listen');
 
-let currentPair = null;
+let currentItem = null;
 let correctScore = 0;
 let wrongScore = 0;
 
-function speak(text, lang = 'ar-SA') {
+// Seslendirme Fonksiyonu
+function speak(text, lang = 'ar-SA', rate = 1.0) {
     if (!('speechSynthesis' in window)) return;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
-    speechSynthesis.cancel();
+    utterance.rate = rate;
     speechSynthesis.speak(utterance);
 }
 
-function nextQuestion() {
-    const randomIndex = Math.floor(Math.random() * LISTEN_DATA.length);
-    currentPair = LISTEN_DATA[randomIndex];
-    feedbackDisplay.textContent = '';
-    userInput.value = '';
-    userInput.disabled = false;
-    checkButton.disabled = false;
-    speak(currentPair.ar, 'ar-SA');
+// Oyunu Başlatma
+function startGame() {
+    if (ALL_WORDS_DATA.length === 0 && ALL_SENTENCES_DATA.length === 0) {
+        feedbackDisplay.textContent = 'Veri bulunamadı.';
+        return;
+    }
+    
+    nextItem();
+    
+    // Olay Dinleyicileri
+    speakerButton.addEventListener('click', () => speak(currentItem.ar, 'ar-SA', currentItem.ar.length > 10 ? 0.9 : 1.0));
+    checkButton.addEventListener('click', checkAnswer);
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer();
+    });
 }
 
-speakerButton.addEventListener('click', () => {
-    if (currentPair) {
-        speak(currentPair.ar, 'ar-SA');
-    }
-});
-
-checkButton.addEventListener('click', () => {
-    if (!currentPair) return;
-
-    const userAnswer = userInput.value.trim().toLowerCase();
-    const correctAnswer = currentPair.tr.trim().toLowerCase();
+// Yeni Kelime/Cümleyi Yükleme
+function nextItem() {
+    // Rastgele Kelime veya Cümle seç (eşit şans verelim)
+    const isSentence = Math.random() < 0.5 && ALL_SENTENCES_DATA.length > 0;
     
-    // Cevabı sadeleştir (noktalama işaretlerini ve fazla boşlukları kaldır)
-    const normalizedUserAnswer = userAnswer.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g," ");
-    const normalizedCorrectAnswer = correctAnswer.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g," ");
+    if (isSentence) {
+        const randomIndex = Math.floor(Math.random() * ALL_SENTENCES_DATA.length);
+        currentItem = ALL_SENTENCES_DATA[randomIndex];
+        // Cümle olduğunu belirten bir ipucu ver
+        userInput.placeholder = "Cümlenin Türkçe karşılığını yazın...";
+    } else if (ALL_WORDS_DATA.length > 0) {
+        const randomIndex = Math.floor(Math.random() * ALL_WORDS_DATA.length);
+        currentItem = ALL_WORDS_DATA[randomIndex];
+        // Kelime olduğunu belirten bir ipucu ver
+        userInput.placeholder = "Kelimenin Türkçe karşılığını yazın...";
+    }
+    
+    userInput.value = '';
+    feedbackDisplay.textContent = '';
+    userInput.disabled = false;
+    checkButton.disabled = false;
+    speakerButton.disabled = false;
 
+    // Yüklenir yüklenmez seslendir
+    speak(currentItem.ar, 'ar-SA', currentItem.ar.length > 10 ? 0.9 : 1.0);
+}
+
+// Cevabı Kontrol Etme
+function checkAnswer() {
+    if (!currentItem) return;
+    
+    const userText = userInput.value.trim().toLowerCase();
+    const correctText = currentItem.tr.trim().toLowerCase().replace(/[\[\]]/g, ''); // [KELİME] formatını temizle
+    
     userInput.disabled = true;
     checkButton.disabled = true;
 
-    if (normalizedUserAnswer === normalizedCorrectAnswer) {
+    // Basit doğrulama: kullanıcı cevabını doğru cevabın bir parçası olarak kabul etme
+    const isCorrect = userText === correctText;
+    
+    if (isCorrect) {
+        // Doğru Cevap
         correctScore++;
         correctScoreDisplay.textContent = correctScore;
-        feedbackDisplay.textContent = 'MÜKEMMEL! ✅';
+        feedbackDisplay.textContent = `✅ Doğru! (${currentItem.tr})`;
         feedbackDisplay.style.color = 'var(--success-green)';
     } else {
+        // Yanlış Cevap
         wrongScore++;
         wrongScoreDisplay.textContent = wrongScore;
-        feedbackDisplay.textContent = `YANLIŞ! ❌ Doğru: ${currentPair.tr}`;
+        feedbackDisplay.textContent = `❌ Yanlış! Doğrusu: ${currentItem.tr}`;
         feedbackDisplay.style.color = 'red';
     }
     
-    setTimeout(nextQuestion, 2000); 
-});
-nextQuestion();
+    // 3 saniye sonra yeni kelimeye geç
+    setTimeout(nextItem, 3000);
+}
+
+// Veri yükleme işlemini başlat
+loadData();
