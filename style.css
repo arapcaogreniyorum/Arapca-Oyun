@@ -1,4 +1,4 @@
-/* style.css - GÜNCEL EĞLENCELİ TEMA VE MOBİL UYUMLULUK */
+/* style.css - GÜNCEL EĞLENCELİ TEMA VE KESİN MOBİL UYUMLULUK */
 
 :root {
     /* Ana Renk Paleti */
@@ -12,7 +12,7 @@
 }
 
 * {
-    box-sizing: border-box; /* Tüm elementler için kutu modelini düzeltir */
+    box-sizing: border-box; 
 }
 
 body {
@@ -35,7 +35,7 @@ header {
 
 h1 {
     color: var(--primary-blue); 
-    font-size: 2.5rem; /* Başlık boyutunu mobil için ayarla */
+    font-size: 2.5rem; 
     margin-bottom: 10px;
 }
 
@@ -45,17 +45,17 @@ p {
 }
 
 /* --- GENEL BUTON STİLİ --- */
-.type-button, .choice-button, #check-button, #speaker-button {
+.type-button, .choice-button, #check-button, #speaker-button, .menu-button {
     font-weight: 600;
     transition: all 0.3s ease;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
     border: none;
-    border-radius: 8px; /* Daha küçük radius */
+    border-radius: 8px; 
     cursor: pointer;
     color: white;
 }
 
-.type-button:hover, .choice-button:hover, #check-button:hover, #speaker-button:hover {
+.type-button:hover, .choice-button:hover, #check-button:hover, #speaker-button:hover, .menu-button:hover {
     transform: translateY(-2px); 
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
     opacity: 0.9;
@@ -65,11 +65,12 @@ p {
 .game-container, 
 .type-game-container, 
 .fill-game-container, 
-.listen-game-container {
+.listen-game-container,
+.match-game-container { /* Eşleştirme konteynerini de buraya ekledik */
     background-color: #ffffff;
     border-radius: 12px; 
     box-shadow: var(--card-shadow);
-    padding: 20px; /* Mobil için padding azaltıldı */
+    padding: 20px; 
     width: 100%;
     max-width: 800px; 
     margin-top: 10px;
@@ -77,21 +78,20 @@ p {
 }
 
 
-/* --- EŞLEŞTİRME OYUNU KARTLARI --- */
-.game-container {
+/* --- EŞLEŞTİRME OYUNU KARTLARI (GENEL VE MASAÜSTÜ İÇİN TEMEL AYAR) --- */
+.match-game-container { /* Sadece eşleştirme konteyneri için düzenle */
     display: grid;
-    /* Mobil (varsayılan): 2 veya 3 sütun */
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
-    gap: 10px; /* Boşluk azaltıldı */
+    grid-template-columns: repeat(4, 1fr); /* Masaüstünde 4 sütun */
+    gap: 15px; 
 }
 
 .card {
     width: 100%;
     min-width: 100px;
-    height: 100px; /* Mobil için kart boyutu azaltıldı */
+    height: 130px; /* Masaüstü boyutu */
     background-color: var(--primary-blue); 
     color: white;
-    font-size: 18px; 
+    font-size: 20px; 
     font-weight: bold;
     display: flex;
     justify-content: center;
@@ -100,7 +100,7 @@ p {
     border-radius: 8px;
     transition: all 0.3s ease;
     text-align: center;
-    padding: 5px;
+    padding: 10px;
 }
 
 .card.flipped {
@@ -117,15 +117,15 @@ p {
     color: var(--success-green); 
     cursor: default;
     box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-    animation: pulse 1s ease-in-out;
+    /* animation: pulse 1s ease-in-out; */
 }
 
-/* Cümleler için Yazı Ayarı (Daha küçük ekranlarda bile okunur olması için) */
-.game-container .card[data-lang="tr-TR"] {
-    font-size: 14px; 
+/* Cümleler için Yazı Ayarı */
+.card[data-lang="tr-TR"] {
+    font-size: 16px; 
 }
-.game-container .card[data-lang="ar-SA"] {
-    font-size: 20px;
+.card[data-lang="ar-SA"] {
+    font-size: 24px;
 }
 
 
@@ -169,6 +169,13 @@ p {
 }
 #user-input {
     width: 90%;
+    max-width: 400px;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid var(--listen-purple);
+    border-radius: 6px;
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 /* --- FOOTER STİLİ --- */
@@ -183,27 +190,61 @@ p {
     font-size: 0.8rem;
 }
 
-/* --- MEDYA SORGUSU (Daha Büyük Ekranlar İçin Ayar) --- */
-@media (min-width: 600px) {
+/* ================================== */
+/* MOBİL UYUMLULUK (RESPONSIVE DESIGN)       */
+/* ================================== */
+
+@media (max-width: 600px) {
+    
+    /* 1. Genel Font ve Padding Ayarları */
+    body {
+        padding: 10px;
+    }
     h1 {
-        font-size: 3rem;
+        font-size: 2rem;
     }
-    p {
-        font-size: 1.1rem;
+    header p {
+        font-size: 0.9rem;
     }
-    .game-container {
-        /* Masaüstünde 4 veya 6 sütun */
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
-        gap: 15px;
+    
+    /* 2. Eşleştirme Oyununun Düzeni (Kritik Düzeltme) */
+    .match-game-container {
+        grid-template-columns: repeat(3, 1fr); /* 4 yerine 3 sütun yap */
+        gap: 8px; 
     }
     .card {
-        height: 130px;
-        font-size: 20px;
+        height: 85px; /* Kart yüksekliğini küçült */
+        font-size: 1rem; 
+        padding: 8px 3px;
     }
-    .game-container .card[data-lang="tr-TR"] {
-        font-size: 16px; 
+    .card[data-lang="tr-TR"] {
+        font-size: 13px; /* Türkçe cümleleri daha küçük yap */
     }
-    .game-container .card[data-lang="ar-SA"] {
-        font-size: 24px;
+    .card[data-lang="ar-SA"] {
+        font-size: 1.4rem; /* Arapça kelimeleri biraz küçült */
+    }
+
+    /* 3. Tip Avcısı / Eksik Kelime Butonları */
+    #type-options, #choice-options {
+        flex-direction: column; /* Butonları alt alta sırala */
+        gap: 8px;
+    }
+    .type-button, .choice-button {
+        width: 100%; /* Tam genişlik kaplasın */
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+    
+    /* 4. Dinle ve Yaz Kontrolleri */
+    #user-input {
+        width: 95%;
+    }
+    .control-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    #listen-model, #start-speech {
+        width: 100%;
+        padding: 12px 20px;
     }
 }
