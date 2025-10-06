@@ -3,63 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dinle ve Yaz Oyunu</title>
+    <title>Arapça Dinle ve Yaz - İşitsel Kavrama</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* CSS dosyasında olmayan bu oyuna özgü layout'u koruyoruz */
-        .listen-game-container { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            width: 90%; 
-            max-width: 450px; 
+        /* UYARI KUTUSU STİLİ */
+        #app-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
-        #speaker-button { 
-            font-size: 24px; 
+        .warning-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-width: 350px;
+            text-align: center;
+        }
+        .warning-box h2 {
+            color: red;
+            margin-top: 0;
+        }
+        .warning-box button {
             background-color: var(--listen-purple); 
-            margin-bottom: 30px; 
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
         }
-        #user-input { 
-            padding: 15px; 
-            font-size: 18px; 
-            width: 90%; 
-            margin-bottom: 20px; 
-            border: 2px solid var(--primary-blue); 
-            border-radius: 8px; 
-            text-align: center; 
-        }
-        #check-button { 
-            padding: 15px 30px; 
-            font-size: 18px; 
-            background-color: var(--primary-blue); 
-        }
-        #feedback { 
-            margin-top: 25px; 
-            font-size: 1.5rem; 
-            font-weight: bold; 
-            min-height: 30px; 
-        }
+        /* OYUN STİLİ */
+        .listen-game-container { text-align: center; }
+        #speaker-button { background-color: var(--listen-purple); padding: 20px 30px; margin-bottom: 30px; font-size: 1.2rem;}
+        #user-input { width: 80%; padding: 15px; font-size: 1.2rem; border-radius: 8px; border: 2px solid #ccc; text-align: right; direction: rtl;}
+        #check-button { background-color: var(--primary-blue); margin-top: 20px; padding: 15px 30px; font-size: 1.2rem;}
+        #feedback { font-size: 1.1rem; margin-top: 20px; min-height: 25px; }
+        .score-board { display: flex; justify-content: space-around; }
     </style>
 </head>
 <body>
 
+    <div id="app-warning">
+        <div class="warning-box">
+            <h2>⚠️ SESLENDİRME UYARISI</h2>
+            <p>Bu uygulama içi tarayıcıda **seslendirme (dinleme) özelliği çalışmayabilir.**</p>
+            <p>Lütfen bu sayfayı kopyalayıp **Chrome, Safari veya Firefox** gibi harici bir tarayıcıda açarak tam performansta kullanın.</p>
+            <button onclick="hideWarning()">Tamam, Devam Et</button>
+        </div>
+    </div>
+
     <header>
-        <h1>Dinle ve Yaz (Telaffuz Egzersizi)</h1>
-        <p>Arapça kelimeyi/cümleyi dinle ve Türkçe karşılığını yaz.</p>
-        <a href="index.html" class="menu-button" style="background-color: #ccc; font-size: 14px; padding: 10px; width: 150px; display: inline-block; margin-top: 10px; border-radius: 5px; color: #333; text-decoration: none;">Ana Menüye Dön</a>
+        <h1>Dinle ve Yaz (İşitsel Pratik)</h1>
+        <p>Duyduğun Arapça kelime veya cümlenin Türkçe karşılığını yaz. Ses butonuna tekrar basarak dinleyebilirsin.</p>
     </header>
 
-    <section class="listen-game-container">
-        <button id="speaker-button">🔊 Dinle</button>
-        <input type="text" id="user-input" placeholder="Türkçe karşılığını yazın..." autocomplete="off">
-        <button id="check-button">Kontrol Et</button>
-        <div id="feedback"></div>
-    </section>
+    <div class="listen-game-container">
+        <div class="score-board">
+            Doğru: <span id="correct-score-listen">0</span> | Yanlış: <span id="wrong-score-listen">0</span>
+        </div>
+        
+        <button id="speaker-button" class="type-button">🔊 Dinle</button>
+        
+        <input type="text" id="user-input" placeholder="Türkçe karşılığını buraya yazın..." required>
+        
+        <button id="check-button" class="type-button">Cevabı Kontrol Et</button>
 
-    <div class="score-board">
-        <p>Doğru: <span id="correct-score-listen">0</span> | Yanlış: <span id="wrong-score-listen">0</span></p>
+        <div id="feedback"></div>
     </div>
-    
+
+    <div class="controls">
+        <a href="index.html" class="menu-button" style="background-color: var(--secondary-orange);">Ana Menü</a>
+    </div>
+
     <script src="dinle_ve_yaz.js"></script>
+    
+    <script>
+        // Uyarı kutusunu gizleyen fonksiyon
+        function hideWarning() {
+            document.getElementById('app-warning').style.display = 'none';
+        }
+    </script>
+
+    <footer class="footer">
+        <p>&copy; 2024 Arapça Öğrenme Oyunları</p>
+    </footer>
 </body>
 </html>
