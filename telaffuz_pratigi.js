@@ -92,26 +92,42 @@ function processSpeechResult(result) {
     document.getElementById('start-speech').disabled = false;
     document.getElementById('listen-model').disabled = false;
 
-    const cleanResult = result.replace(/[^ء-ي]/g, '').trim(); 
-    const cleanModel = currentItem.ar.replace(/[^ء-ي]/g, '').trim(); 
+    // --- KRİTİK DÜZELTME BAŞLANGICI: normalizeArabic fonksiyonu kullanılıyor ---
     
-    // Basit doğruluk kontrolü (uzunluk farkı ve başlangıç/bitiş eşleşmesi)
-    const isClose = cleanModel.includes(cleanResult) || cleanResult.includes(cleanModel); 
+    // Sistemden gelen metin ve model metin normalize ediliyor. (utility.js'den gelen normalizeArabic)
+    const normalizedResult = normalizeArabic(result);
+    const normalizedModel = normalizeArabic(currentItem.ar); 
+    
+    // Basit ve güvenilir kontrol: Algılanan metin, model metni içeriyor mu?
+    // Bu, "سياره سياره" gibi tekrarlı veya "kitap" yerine "el kitap" gibi ek kelime içeren sonuçları da kabul etmeyi kolaylaştırır.
+    const isMatch = normalizedResult.includes(normalizedModel);
+    
+    // Ayrıca, telaffuzun çok kısa olmaması için bir uzunluk kontrolü de ekleyebiliriz (isteğe bağlı, basitleştirilmiş)
+    const minLengthCheck = normalizedResult.length > normalizedModel.length * 0.5;
 
-    if (isClose && cleanResult.length > cleanModel.length * 0.5) { 
+    if (isMatch && minLengthCheck) { 
         correctScore++;
         document.getElementById('feedback').textContent = "✅ Mükemmel! Telaffuzunuz başarılıydı. Tebrikler!";
         document.getElementById('feedback').style.color = 'var(--success-green)';
+        
+        // Zor kelimelerden çıkar (eğer telaffuz oyunu için zor kelime takibi yapılıyorsa)
+        // updateDifficultWords(currentItem, 'remove', 'telaffuz_pratigi'); 
+        
         setTimeout(nextItem, 2500);
     } else {
         retryScore++;
         document.getElementById('feedback').textContent = `❌ Tekrar Deneyin. Telaffuzunuz tam eşleşmedi. Doğru model: "${currentItem.ar}"`;
         document.getElementById('feedback').style.color = 'red';
+        
+        // Zor kelimelere ekle
+        // updateDifficultWords(currentItem, 'add', 'telaffuz_pratigi'); 
+        
         setTimeout(() => {
             document.getElementById('feedback').textContent = 'Tekrar okumayı deneyin veya doğru okunuşu dinleyin.';
             document.getElementById('feedback').style.color = 'var(--dark-text)';
         }, 3000);
     }
+    // --- KRİTİK DÜZELTME SONU ---
 
     document.getElementById('correct-score-speech').textContent = correctScore;
     document.getElementById('retry-score-speech').textContent = retryScore;
