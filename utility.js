@@ -96,7 +96,43 @@ function checkAndDisplayWarning() {
     };
 }
 
-// Zor kelime kaydetme/çekme fonksiyonları (Akıllı Tekrar için)
+
+// ------------------------------------------------------------------
+// TELAFUZ DÜZELTME FONKSİYONU (YENİ EKLENDİ)
+// ------------------------------------------------------------------
+
+/**
+ * Arapça kelimeleri konuşma tanıma ve veri eşleştirmesi için basitleştirir.
+ * - Harekeleri ve Şeddeleri kaldırır.
+ * - Elif, Yuvarlak T ve Elif Maksura varyasyonlarını standartlaştırır.
+ */
+function normalizeArabic(text) {
+    if (!text) return "";
+    
+    let normalized = text.trim().toLowerCase();
+    
+    // 1. Harekeleri (Vowels) ve Şeddeyi Kaldır (Çoğu tarayıcıda zaten tanıma sırasında kaldırılır, ama garanti olsun)
+    normalized = normalized.replace(/[\u064b-\u065e\u0651]/g, ""); 
+    
+    // 2. Elif Varyasyonlarını Standartlaştır (آ، أ، إ -> ا)
+    normalized = normalized.replace(/[\u0622\u0623\u0625]/g, "\u0627"); 
+    
+    // 3. Yuvarlak T (ة) ve normal H (ه) farkını standartlaştır (ة -> ه)
+    normalized = normalized.replace(/\u0629/g, "\u0647"); 
+    
+    // 4. Elif Maksura (ى) ve Yaa (ي) standartlaştır (ى -> ي)
+    normalized = normalized.replace(/\u0649/g, "\u064A"); 
+    
+    // 5. Birden fazla boşluğu tek boşluğa indir ve baştaki/sondaki boşlukları kaldır.
+    normalized = normalized.replace(/\s+/g, " ").trim();
+    
+    return normalized;
+}
+
+
+// ------------------------------------------------------------------
+// ZOR KELİME YÖNETİMİ (MEVCUT)
+// ------------------------------------------------------------------
 
 function getDifficultWords(gameId = 'kelime_tipi') {
     const list = localStorage.getItem(`difficult_words_${gameId}`);
