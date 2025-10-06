@@ -3,68 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eksik Kelimeyi Bul Oyunu</title>
+    <title>Arapça Eksik Kelimeyi Bul - Bağlam Pratiği</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* CSS dosyasında olmayan bu oyuna özgü layout'u koruyoruz */
-        .fill-game-container { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            width: 90%; 
-            max-width: 650px; 
-        }
-        #sentence-display { 
-            font-size: 28px; 
-            font-weight: bold; 
-            color: var(--success-green); 
-            margin-bottom: 30px; 
-            text-align: center; 
-            line-height: 1.6; 
-            direction: rtl; /* Arapça için sağdan sola */
-        }
-        .choice-options { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 15px; 
-            width: 100%; 
-            max-width: 450px;
-        }
-        .choice-button { 
-            padding: 15px; 
-            font-size: 18px; 
-        }
-        #translation-display { 
-            margin-top: 25px; 
-            font-style: italic; 
-            color: var(--dark-text); 
-            font-size: 1.1rem;
-        }
+        .fill-game-container { text-align: center; }
+        #sentence-display { font-size: 2.2rem; margin: 30px 0; min-height: 60px; direction: rtl; font-weight: 500;}
+        #translation-display { font-size: 1rem; margin-top: 15px; min-height: 20px;}
+        .choice-options { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 20px;}
+        .choice-button { background-color: var(--success-green); padding: 15px 25px; font-size: 16px; min-width: 120px;}
+        .score-board { display: flex; justify-content: space-around; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Eksik Kelimeyi Bul (Arapça)</h1>
-        <p>Arapça cümledeki boşluğu dolduran doğru Arapça kelimeyi seç!</p>
-        <a href="index.html" class="menu-button" style="background-color: #ccc; font-size: 14px; padding: 10px; width: 150px; display: inline-block; margin-top: 10px; border-radius: 5px; color: #333; text-decoration: none;">Ana Menüye Dön</a>
+        <h1>Eksik Kelimeyi Bul</h1>
+        <p>Cümledeki boşluğu doğru Arapça kelime ile doldurarak anlama ve kelime bilginizi test edin.</p>
     </header>
 
-    <section class="fill-game-container">
-        <div id="sentence-display"></div>
-        <div class="choice-options">
-            <button class="choice-button" data-choice="1"></button>
-            <button class="choice-button" data-choice="2"></button>
-            <button class="choice-button" data-choice="3"></button>
-            <button class="choice-button" data-choice="4"></button>
+    <div class="fill-game-container">
+        <div class="score-board">
+            Doğru: <span id="correct-score">0</span> | Yanlış: <span id="wrong-score">0</span>
         </div>
-        <div id="translation-display"></div>
-    </section>
 
-    <div class="score-board">
-        <p>Doğru: <span id="correct-score">0</span> | Yanlış: <span id="wrong-score">0</span></p>
+        <div id="sentence-display">Yükleniyor...</div>
+        
+        <div class="choice-options" id="choice-options">
+            <button class="choice-button" data-choice="" disabled>Seçenek 1</button>
+            <button class="choice-button" data-choice="" disabled>Seçenek 2</button>
+            <button class="choice-button" data-choice="" disabled>Seçenek 3</button>
+            <button class="choice-button" data-choice="" disabled>Seçenek 4</button>
+        </div>
+
+        <div id="translation-display"></div>
     </div>
-    
+
+    <div class="controls">
+        <a href="index.html" class="menu-button" style="background-color: var(--primary-blue);">Ana Menü</a>
+    </div>
+
     <script src="eksik_kelime.js"></script>
+
+    <footer class="footer">
+        <p>&copy; 2024 Arapça Öğrenme Oyunları</p>
+    </footer>
 </body>
 </html>
