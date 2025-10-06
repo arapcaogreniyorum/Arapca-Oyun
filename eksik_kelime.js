@@ -1,118 +1,142 @@
-// EKSİK KELİMEYİ BUL MANTIĞI: Arapça Boşluk Doldurma
-const SENTENCE_DATA = [
-    { 
-        ar_template: 'الطالب يقرأ [BOŞLUK] في المكتبة.', 
-        dogru_kelime: 'كتاباً',
-        yanlis_secenekler: ['سيارة', 'شرب', 'سريع'],
-        tr_translation: 'Öğrenci kütüphanede kitap okuyor.'
-    },
-    { 
-        ar_template: 'هذا المنزل [BOŞLUK] جداً.', 
-        dogru_kelime: 'جديد',
-        yanlis_secenekler: ['المعلم', 'الجامعة', 'طبخ'],
-        tr_translation: 'Bu ev çok yenidir.'
-    },
-    { 
-        ar_template: 'نحن نحتاج إلى [BOŞLUK] لحل المشكلة.', 
-        dogru_kelime: 'التفكير',
-        yanlis_secenekler: ['السفر', 'العمل', 'ساعد'],
-        tr_translation: 'Problemi çözmek için düşünmeye ihtiyacımız var.'
-    },
-    { 
-        ar_template: 'هل [BOŞLUK] المسلسل الجديد؟', 
-        dogru_kelime: 'شاهدت',
-        yanlis_secenekler: ['المدينة', 'مهم', 'صحيح'],
-        tr_translation: 'Yeni diziyi izledin mi?'
-    },
-    { 
-        ar_template: 'ذهبت إلى [BOŞLUK] لشراء القهوة.', 
-        dogru_kelime: 'المتجر',
-        yanlis_secenekler: ['كتب', 'مختلف', 'صغير'],
-        tr_translation: 'Kahve almak için mağazaya gittim.'
-    },
-    { 
-        ar_template: 'المطر يمنعنا من [BOŞLUK] اليوم.', 
-        dogru_kelime: 'الخروج',
-        yanlis_secenekler: ['السعيد', 'الصباح', 'الدفتر'],
-        tr_translation: 'Yağmur bugün dışarı çıkmamızı engelliyor.'
-    },
-];
+// ==========================================================
+// EKSİK KELİMEYİ BUL OYUNU
+// ==========================================================
 
+// Yeni Veri Çekme Yapısı (Tüm JS dosyalarında aynı)
+let ALL_WORDS_DATA = [];
+let ALL_SENTENCES_DATA = [];
+let ALL_FILL_SENTENCES = [];
+
+async function loadData() {
+    try {
+        const response = await fetch('data.json');
+        if (!response.ok) {
+            throw new Error(`HTTP hata kodu: ${response.status}`);
+        }
+        const data = await response.json();
+        ALL_WORDS_DATA = data.kelimeler;
+        ALL_SENTENCES_DATA = data.cumleler;
+        ALL_FILL_SENTENCES = data.eksik_kelime_cumleleri;
+        console.log("Veri başarıyla yüklendi. Toplam eksik kelime cümlesi:", ALL_FILL_SENTENCES.length);
+        
+        startGame(); 
+
+    } catch (error) {
+        console.error("Veri yüklenirken hata oluştu:", error);
+        alert("Üzgünüz, oyun verileri yüklenemedi. Lütfen sayfayı yenileyin.");
+    }
+}
+
+// Oyun Değişkenleri
 const sentenceDisplay = document.getElementById('sentence-display');
+const choiceOptionsDiv = document.querySelector('.choice-options');
 const translationDisplay = document.getElementById('translation-display');
-const choiceButtons = document.querySelectorAll('.choice-button');
 const correctScoreDisplay = document.getElementById('correct-score');
 const wrongScoreDisplay = document.getElementById('wrong-score');
+const choiceButtons = document.querySelectorAll('.choice-button');
 
 let currentSentence = null;
 let correctScore = 0;
 let wrongScore = 0;
 
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]]; 
-    }
-}
-
+// Seslendirme Fonksiyonu
 function speak(text, lang = 'ar-SA') {
     if (!('speechSynthesis' in window)) return;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
-    speechSynthesis.cancel();
+    utterance.rate = 0.9;
     speechSynthesis.speak(utterance);
 }
 
+// Oyunu Başlatma
+function startGame() {
+    if (ALL_FILL_SENTENCES.length === 0) {
+        sentenceDisplay.innerHTML = '<h2>Eksik kelime cümleleri yüklenemedi.</h2>';
+        return;
+    }
+    nextSentence();
+    // Butonlara click olayını atama
+    choiceButtons.forEach(button => button.addEventListener('click', checkAnswer));
+}
+
+// Yeni Cümleyi Yükleme
 function nextSentence() {
-    const randomIndex = Math.floor(Math.random() * SENTENCE_DATA.length);
-    currentSentence = SENTENCE_DATA[randomIndex];
-
-    // Arapça template'i kullan ve boşluk alanını göster
-    const formattedSentence = currentSentence.ar_template.replace('[BOŞLUK]', '<span class="blank-space">_____</span>');
-    sentenceDisplay.innerHTML = formattedSentence;
     translationDisplay.textContent = '';
+    
+    // Rastgele cümle seç
+    const randomIndex = Math.floor(Math.random() * ALL_FILL_SENTENCES.length);
+    currentSentence = ALL_FILL_SENTENCES[randomIndex];
+    
+    // [KELİME] kısmını gizli boşluk olarak göster
+    const displayedSentence = currentSentence.ar.replace(`[${currentSentence.dogru}]`, `<span class="blank-space">...</span>`);
+    sentenceDisplay.innerHTML = displayedSentence;
+    
+    // Seçenekleri oluştur
+    createChoices();
+}
 
-    let choices = [currentSentence.dogru_kelime].concat(currentSentence.yanlis_secenekler);
-    shuffle(choices);
-
+// Seçenekleri Oluşturma
+function createChoices() {
+    let choices = [currentSentence.dogru];
+    
+    // Yanlış cevaplar için havuz
+    const wrongAnswersPool = ALL_FILL_SENTENCES
+        .map(c => c.dogru)
+        .filter(d => d !== currentSentence.dogru);
+    
+    // 3 yanlış cevap ekle
+    while (choices.length < 4 && wrongAnswersPool.length > 0) {
+        const randomIndex = Math.floor(Math.random() * wrongAnswersPool.length);
+        const wrongChoice = wrongAnswersPool.splice(randomIndex, 1)[0];
+        if (!choices.includes(wrongChoice)) {
+            choices.push(wrongChoice);
+        }
+    }
+    
+    // Seçenekleri karıştır
+    choices.sort(() => Math.random() - 0.5);
+    
+    // Butonlara seçenekleri yerleştir
     choiceButtons.forEach((button, index) => {
         button.textContent = choices[index];
-        button.onclick = () => checkAnswer(button.textContent);
+        button.dataset.choice = choices[index];
+        button.style.backgroundColor = 'var(--success-green)';
         button.disabled = false;
-        button.style.backgroundColor = 'var(--success-green)'; 
     });
 }
 
-function checkAnswer(selectedWord) {
-    const isCorrect = (selectedWord === currentSentence.dogru_kelime);
+// Cevabı Kontrol Etme
+function checkAnswer() {
+    const selectedChoice = this.dataset.choice;
     
+    // Tüm butonları devre dışı bırak
     choiceButtons.forEach(button => button.disabled = true);
-
-    if (isCorrect) {
+    
+    if (selectedChoice === currentSentence.dogru) {
+        // Doğru Cevap
         correctScore++;
         correctScoreDisplay.textContent = correctScore;
+        translationDisplay.textContent = `✅ Harika! Türkçesi: "${currentSentence.tr.replace(`[${currentSentence.dogru}]`, selectedChoice)}"`;
+        translationDisplay.style.color = 'var(--success-green)';
         
-        // Cümleyi Arapça doğru kelime ile tamamla
-        const completedSentence = currentSentence.ar_template.replace('[BOŞLUK]', `<span style="color:var(--primary-blue); font-weight: bold;">${selectedWord}</span>`);
-        sentenceDisplay.innerHTML = completedSentence;
-        
-        translationDisplay.textContent = `Doğru! Türkçe Çeviri: ${currentSentence.tr_translation}`;
-        speak(currentSentence.ar_template.replace('[BOŞLUK]', selectedWord), 'ar-SA');
+        // Cümlenin tamamını seslendir
+        speak(currentSentence.ar.replace(`[${currentSentence.dogru}]`, currentSentence.dogru), 'ar-SA');
         
     } else {
+        // Yanlış Cevap
         wrongScore++;
         wrongScoreDisplay.textContent = wrongScore;
-        
-        choiceButtons.forEach(button => {
-            if (button.textContent === selectedWord) {
-                button.style.backgroundColor = 'red';
-            }
-        });
-        
-        translationDisplay.textContent = `Yanlış! Doğru kelime: ${currentSentence.dogru_kelime}. Türkçe: ${currentSentence.tr_translation}`;
+        this.style.backgroundColor = 'red';
+        translationDisplay.textContent = `❌ Hata! Doğru kelime: ${currentSentence.dogru}. Türkçesi: "${currentSentence.tr.replace(`[${currentSentence.dogru}]`, currentSentence.dogru)}"`;
+        translationDisplay.style.color = 'red';
     }
-
-    setTimeout(nextSentence, 3000); 
+    
+    // Doğru kelimeyi gösteren butonu vurgula
+    document.querySelector(`.choice-button[data-choice="${currentSentence.dogru}"]`).style.backgroundColor = 'var(--primary-blue)';
+    
+    // 3 saniye sonra yeni cümleye geç
+    setTimeout(nextSentence, 3000);
 }
 
-nextSentence();
+// Veri yükleme işlemini başlat
+loadData();
