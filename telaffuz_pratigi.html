@@ -17,13 +17,16 @@
             padding: 10px;
             border-radius: 8px;
             background-color: #f7f7f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        #translation-display { font-size: 1.1rem; margin-top: 10px; color: #555; }
+        #translation-display { font-size: 1.1rem; margin-top: 10px; color: #555; min-height: 20px;}
         #user-speech-output { font-style: italic; min-height: 25px; margin-top: 15px; color: #007bff; }
         
         .control-buttons { display: flex; justify-content: center; gap: 15px; margin-top: 30px; }
         
-        #listen-model, #start-speech { 
+        #listen-model, #start-speech, #restart-button { 
             padding: 15px 30px; 
             font-size: 18px; 
             border: none; 
@@ -35,7 +38,7 @@
         #listen-model { background-color: var(--primary-blue); color: white; }
         #start-speech { background-color: var(--listen-purple); color: white; }
         
-        #start-speech:disabled { background-color: #ccc; cursor: not-allowed; }
+        #start-speech:disabled, #listen-model:disabled { background-color: #ccc; cursor: not-allowed; }
 
         .score-board { display: flex; justify-content: space-around; }
     </style>
@@ -65,14 +68,14 @@
     </div>
 
     <div class="controls">
-        <a href="index.html" class="menu-button" style="background-color: var(--success-green);">Ana Menü</a>
+        <a href="index.html" class="menu-button" style="background-color: var(--success-green);">Ana Menüye Dön</a>
     </div>
 
     <script src="utility.js"></script>
     <script src="telaffuz_pratigi.js"></script>
     
     <footer class="footer">
-        <p>&copy; 2024 Arapça Öğrenme Oyunları</p>
+        <p>&copy; 2025 Arapça Öğrenme Oyunları</p>
     </footer>
 </body>
 </html>
