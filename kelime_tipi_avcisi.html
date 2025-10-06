@@ -3,58 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelime Tipi Avcısı (Gramer Refleksi)</title>
+    <title>Arapça Kelime Tipi Avcısı - Gramer Refleksi</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* CSS dosyasında olmayan bu oyuna özgü layout'u koruyoruz */
-        .type-game-container { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            width: 90%; 
-            max-width: 400px; 
-        }
-        #word-display { 
-            font-size: 48px; 
-            font-weight: bold; 
-            color: var(--secondary-orange); 
-            margin-bottom: 40px; 
-            min-height: 60px; 
-        }
-        .type-options { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 15px; 
-            width: 100%; 
-        }
-        .type-button { 
-            padding: 18px 10px; 
-            font-size: 18px; 
-            background-color: var(--primary-blue); 
-        }
+        .type-game-container { text-align: center; }
+        #word-display { font-size: 3.5rem; font-weight: bold; margin: 30px 0; min-height: 80px; direction: rtl; color: var(--secondary-orange); }
+        .type-options { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 20px;}
+        .type-button { background-color: var(--secondary-orange); padding: 15px 30px; font-size: 18px;}
+        .score-board { display: flex; justify-content: space-around; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Kelime Tipi Avcısı</h1>
-        <p>Arapça kelimenin **İsim, Fiil veya Sıfat** olup olmadığını hızlıca belirle!</p>
-        <a href="index.html" class="menu-button" style="background-color: #ccc; font-size: 14px; padding: 10px; width: 150px; display: inline-block; margin-top: 10px; border-radius: 5px; color: #333; text-decoration: none;">Ana Menüye Dön</a>
+        <h1>Kelime Tipi Avcısı (Gramer)</h1>
+        <p>Gördüğün kelimenin **İSİM, FİİL veya SIFAT** gibi hangi gramer tipine ait olduğunu olabildiğince hızlı bul!</p>
     </header>
 
-    <section class="type-game-container">
-        <div id="word-display">Başlamak İçin Tıkla</div>
-        <div class="type-options">
-            <button class="type-button" data-type="ISIM">İSİM</button>
-            <button class="type-button" data-type="FIIL">FIIL</button>
-            <button class="type-button" data-type="SIFAT">SIFAT</button>
+    <div class="type-game-container">
+        <div class="score-board">
+            Doğru: <span id="score">0</span> | Yanlış: <span id="misses">0</span>
         </div>
-    </section>
+        
+        <div id="word-display">Başlamak için bir türe tıkla!</div>
 
-    <div class="score-board">
-        <p>Puan: <span id="score">0</span> | Yanlış: <span id="misses">0</span></p>
+        <div class="type-options" id="type-options">
+            </div>
     </div>
-    
+
+    <div class="controls">
+        <a href="index.html" class="menu-button" style="background-color: var(--primary-blue);">Ana Menü</a>
+    </div>
+
     <script src="kelime_tipi_avcisi.js"></script>
+    
+    <footer class="footer">
+        <p>&copy; 2024 Arapça Öğrenme Oyunları</p>
+    </footer>
 </body>
 </html>
