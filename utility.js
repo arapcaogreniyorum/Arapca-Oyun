@@ -160,4 +160,75 @@ function updateDifficultWords(word, action, gameId = 'kelime_tipi') {
     }
     
     localStorage.setItem(`difficult_words_${gameId}`, JSON.stringify(difficultWords));
+} 
+
+// ------------------------------------------------------------------
+// LEVEL (SEVİYE) YÖNETİMİ (YENİ EKLENEN KISIM)
+// ------------------------------------------------------------------
+
+const MAX_LEVEL = 10; // Uygulamanın ulaşabileceği maksimum seviye sayısı
+const XP_PER_LEVEL = 5; // Bir sonraki seviyeye geçmek için gereken başarılı skor (her oyun için ayrı ayrı)
+const GLOBAL_LEVEL_KEY = 'user_global_level';
+
+/**
+ * Kullanıcının mevcut global seviyesini Local Storage'dan alır. Yoksa 1 döndürür.
+ */
+function getCurrentGlobalLevel() {
+    const level = localStorage.getItem(GLOBAL_LEVEL_KEY);
+    return level ? parseInt(level, 10) : 1;
+}
+
+/**
+ * Belirli bir oyunun (type_game, fill_game, match_game vb.) başarılı skorunu Local Storage'da günceller.
+ * Bu skor, seviye ilerlemesi için kullanılır.
+ * @param {string} gameId - Oyunun benzersiz kimliği (örn: 'telaffuz', 'kelime_tipi').
+ * @param {boolean} isCorrect - Cevabın doğru olup olmadığı.
+ */
+function updateGameScore(gameId, isCorrect) {
+    const scoreKey = `score_${gameId}`;
+    let currentScore = parseInt(localStorage.getItem(scoreKey) || '0', 10);
+    
+    if (isCorrect) {
+        currentScore += 1;
+        localStorage.setItem(scoreKey, currentScore.toString());
+        
+        // Seviye atlama kontrolünü yap
+        checkLevelUp(gameId, currentScore);
+    }
+}
+
+/**
+ * Seviye atlama kontrolünü yapar ve seviye atlanmışsa global seviyeyi günceller.
+ * @param {string} gameId - Oyunun benzersiz kimliği.
+ * @param {number} currentScore - Oyunun mevcut başarılı skor sayısı.
+ */
+function checkLevelUp(gameId, currentScore) {
+    let currentLevel = getCurrentGlobalLevel();
+    
+    // Yeterli skor toplanmışsa ve maksimum seviyeye ulaşılmamışsa
+    // NOT: İleride bu skoru seviyeye göre artırabilirsiniz (örn: Seviye 2 için 10 XP)
+    const requiredXP = XP_PER_LEVEL; 
+    
+    if (currentScore >= requiredXP && currentLevel < MAX_LEVEL) {
+        
+        // Global seviyeyi artır
+        currentLevel += 1;
+        localStorage.setItem(GLOBAL_LEVEL_KEY, currentLevel.toString());
+        
+        console.log(`🎉 Tebrikler! Seviye ${currentLevel}'e ulaştınız.`);
+        alert(`🎉 Tebrikler! Artık Seviye ${currentLevel}'desiniz! Yeni kelimeler ve oyunlar açıldı!`);
+
+        // NOT: Burası seviye atladıktan sonra mevcut oyunun skorunu sıfırlama veya koruma kararına bağlıdır.
+        // Şimdilik skorlar korunuyor.
+    }
+}
+
+/**
+ * Belirli bir oyunda kullanıcının şu anki başarılı skorunu alır.
+ * @param {string} gameId - Oyunun benzersiz kimliği.
+ * @returns {number} Oyunun mevcut başarılı skoru.
+ */
+function getGameScore(gameId) {
+    const scoreKey = `score_${gameId}`;
+    return parseInt(localStorage.getItem(scoreKey) || '0', 10);
 }
