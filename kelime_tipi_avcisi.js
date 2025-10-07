@@ -1,32 +1,54 @@
-// kelime_tipi_avcisi.js - Kelime Tipi Avcısı Oyununun Mantığı (AKILLI TEKRAR Versiyonu)
+// kelime_tipi_avcisi.js - Kelime Tipi Avcısı Oyununun Mantığı (AKILLI TEKRAR + LEVEL VERSİYONU)
 
 let words = []; 
 let currentWordIndex = 0; 
-let score = 0; 
-let misses = 0; 
+let misses = 0; // Doğru skor artık Local Storage'dan yönetilecek
 const allowedTypes = ["İSİM", "FİİL", "SIFAT", "ZAMİR", "ZARF", "EDAT"]; 
 const TOTAL_WORDS_TO_PLAY = 15; // Bir oyunda sorulacak toplam kelime sayısı
+const GAME_ID = 'kelime_tipi'; // Bu oyunun benzersiz kimliği
+
+// YENİ FONKSİYON: Seviye bilgisini HTML'de gösterir.
+function updateLevelDisplay() {
+    const currentLevel = getCurrentGlobalLevel(); // utility.js'den gelir
+    const levelDisplay = document.getElementById('current-global-level');
+    if (levelDisplay) {
+        levelDisplay.textContent = currentLevel;
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
+    // YENİ: Sayfa yüklenir yüklenmez seviyeyi göster
+    updateLevelDisplay();
+    
     loadData().then(data => {
         if (data) {
             window.allData = data;
-            restartGame(); // Oyunu başlatma logic'i restartGame'e taşındı
+            
+            // Başlangıç skorlarını Local Storage'dan yükle
+            document.getElementById('score').textContent = getGameScore(GAME_ID);
+            
+            restartGame(); 
         }
     });
 });
 
 function selectWordsForGame() {
-    // Tüm kelimeleri tipine göre filtrele
-    const allFilteredWords = window.allData.kelimeler.filter(word => allowedTypes.includes(word.tip));
+    // YENİ: Mevcut Global Seviyeyi al
+    const currentLevel = getCurrentGlobalLevel(); 
+    
+    // YENİ: Tüm kelimeleri tipine GÖRE ve seviyeye GÖRE filtrele
+    const allFilteredWords = window.allData.kelimeler.filter(
+        word => allowedTypes.includes(word.tip) && word.seviye <= currentLevel
+    );
 
     if (allFilteredWords.length === 0) {
-        document.getElementById('word-display').textContent = "Yeterli kelime bulunamadı.";
+        document.getElementById('word-display').textContent = "Yeterli kelime bulunamadı. Lütfen data.js dosyasını kontrol edin veya seviyenizi artırın.";
         return [];
     }
 
     // Zor kelimeler listesini al (utility.js'ten)
-    const difficultWords = getDifficultWords(); 
+    // NOT: getDifficultWords ve updateDifficultWords'e oyun ID'si eklenmeli
+    const difficultWords = getDifficultWords(GAME_ID); 
     let selectedWords = [];
     const easyWords = allFilteredWords.filter(word => !difficultWords.some(dw => dw.ar === word.ar));
 
@@ -76,13 +98,18 @@ function checkAnswer(selectedType, clickedButton) {
     buttons.forEach(btn => btn.classList.remove('correct-feedback', 'incorrect-feedback'));
 
     if (selectedType === currentWord.tip) {
-        score++;
+        // YENİ: Skoru güncelle ve seviye atlamayı kontrol et
+        updateGameScore(GAME_ID, true); 
+        
+        // YENİ: Seviye atlamış olabilir, ekranı güncelle
+        updateLevelDisplay();
+
         display.style.color = 'var(--success-green)';
         display.textContent = `${originalText} (Doğru: ${currentWord.tip})`;
         clickedButton.classList.add('correct-feedback');
         
         // AKILLI TEKRAR: Doğru bildi, zor kelimeler listesinden çıkar!
-        updateDifficultWords(currentWord, 'remove'); 
+        updateDifficultWords(currentWord, 'remove', GAME_ID); 
 
     } else {
         misses++;
@@ -96,10 +123,11 @@ function checkAnswer(selectedType, clickedButton) {
         });
         
         // AKILLI TEKRAR: Yanlış bildi, zor kelimeler listesine ekle!
-        updateDifficultWords(currentWord, 'add'); 
+        updateDifficultWords(currentWord, 'add', GAME_ID); 
     }
 
-    document.getElementById('score').textContent = score;
+    // YENİ: Skor Local Storage'dan çekiliyor
+    document.getElementById('score').textContent = getGameScore(GAME_ID); 
     document.getElementById('misses').textContent = misses;
 
     setTimeout(() => {
@@ -117,9 +145,12 @@ function endGame() {
     const display = document.getElementById('word-display');
     const optionsContainer = document.getElementById('type-options');
     
+    // YENİ: Skoru Local Storage'dan çek
+    const finalScore = getGameScore(GAME_ID);
+    
     // Oyun sonu toplam skorlarını hesapla
-    const totalQuestions = score + misses;
-    const successRate = totalQuestions > 0 ? ((score / totalQuestions) * 100).toFixed(1) : 0;
+    const totalQuestions = finalScore + misses;
+    const successRate = totalQuestions > 0 ? ((finalScore / totalQuestions) * 100).toFixed(1) : 0;
     
     // Kelime alanını temizle ve bitiş mesajını göster
     display.innerHTML = `
@@ -133,7 +164,7 @@ function endGame() {
         <div class="score-summary" style="text-align: left; width: 100%; max-width: 300px; margin: 0 auto 30px; padding: 15px; background-color: var(--light-bg); border-radius: 8px;">
             <h3 style="margin-top: 0; color: var(--secondary-orange);">Sonuçlar</h3>
             <p><strong>Toplam Soru:</strong> ${totalQuestions}</p>
-            <p style="color: var(--success-green);"><strong>Doğru Cevap:</strong> ${score}</p>
+            <p style="color: var(--success-green);"><strong>Doğru Cevap:</strong> ${finalScore}</p>
             <p style="color: red;"><strong>Yanlış Cevap:</strong> ${misses}</p>
             <hr style="border-top: 1px solid #ddd;">
             <p><strong>Başarı Oranı:</strong> %${successRate}</p>
@@ -149,18 +180,17 @@ function endGame() {
     document.getElementById('restart-button').addEventListener('click', restartGame);
 }
 
-// Diğer fonksiyonlar (restartGame, checkAnswer, vb.) aynı kalır.
-
-
 function restartGame() {
-    // Skorları sıfırla
-    score = 0;
+    // Yanlışları sıfırla, doğru skor Local Storage'da kalır
     misses = 0;
     currentWordIndex = 0;
-    document.getElementById('score').textContent = score;
+    
+    // YENİ: Skor ve seviyeyi güncelle
+    document.getElementById('score').textContent = getGameScore(GAME_ID);
+    updateLevelDisplay();
     document.getElementById('misses').textContent = misses;
     
-    // Yeni kelime setini Akıllı Tekrar mantığıyla seç
+    // Yeni kelime setini Akıllı Tekrar/Level mantığıyla seç
     words = selectWordsForGame();
     
     renderTypeOptions();
