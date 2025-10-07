@@ -13,6 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // YENİ: Başlangıçta sadece mevcut seviyedeki öğeleri çek
             filterAndShuffleItems(); 
             
+            // YENİ EKLENEN KISIM: MEVCUT SEVİYEYİ HTML'e yaz
+            const currentLevel = getCurrentGlobalLevel();
+            const levelDisplay = document.getElementById('current-global-level');
+            if (levelDisplay) {
+                levelDisplay.textContent = currentLevel;
+            }
+            
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 initializeSpeechRecognition();
                 setupListeners();
@@ -207,13 +214,17 @@ function endGame() {
 
 function restartGame() {
     retryScore = 0;
-    // correctScore sıfırlanmıyor, çünkü Local Storage'dan seviye skorunu koruyoruz.
     
     // YENİ: Verileri tekrar filtreleyip karıştır
     filterAndShuffleItems();
     
     const container = document.querySelector('.speech-game-container');
-    container.innerHTML = `<div class="score-board">
+    container.innerHTML = `
+    <div id="current-global-level-display">
+        ⭐ Mevcut Seviye: <span id="current-global-level">${getCurrentGlobalLevel()}</span>
+    </div>
+    
+    <div class="score-board">
         Başarılı: <span id="correct-score-speech">${getGameScore('telaffuz')}</span> | Tekrar Dene: <span id="retry-score-speech">0</span>
     </div>
 
