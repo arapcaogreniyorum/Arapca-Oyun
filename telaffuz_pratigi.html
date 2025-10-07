@@ -41,6 +41,14 @@
         #start-speech:disabled, #listen-model:disabled { background-color: #ccc; cursor: not-allowed; }
 
         .score-board { display: flex; justify-content: space-around; }
+        
+        /* Yeni Seviye Stili */
+        #current-global-level-display { 
+            font-size: 1.4rem; 
+            font-weight: bold; 
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body onload="checkAndDisplayWarning()">
@@ -51,6 +59,10 @@
     </header>
 
     <div class="speech-game-container">
+        
+        <div id="current-global-level-display">
+            ⭐ Mevcut Seviye: <span id="current-global-level">Yükleniyor...</span>
+        </div>
         <div class="score-board">
             Başarılı: <span id="correct-score-speech">0</span> | Tekrar Dene: <span id="retry-score-speech">0</span>
         </div>
