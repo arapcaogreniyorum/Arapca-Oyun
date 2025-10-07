@@ -52,6 +52,19 @@
         }
         .score-board {
             margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            width: 80%; /* Skorları yan yana hizalamak için */
+            margin: 20px auto;
+        }
+        
+        /* YENİ STİL: Seviye göstergesi için */
+        #current-global-level-display { 
+            font-size: 1.2rem; 
+            font-weight: bold; 
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            text-align: center;
         }
     </style>
 </head>
@@ -63,6 +76,10 @@
     </header>
 
     <div class="type-game-container">
+        
+        <div id="current-global-level-display">
+            ⭐ Mevcut Seviye: <span id="current-global-level">Yükleniyor...</span>
+        </div>
         <div class="score-board">
             Doğru: <span id="score">0</span> | Yanlış: <span id="misses">0</span>
         </div>
