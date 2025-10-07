@@ -5,20 +5,28 @@ let currentItem = null;
 let retryScore = 0; // Doğru skor artık Local Storage'dan yönetilecek
 let recognition = null; // Konuşma tanıma objesi
 
+// YENİ EKLENEN KISIM: HTML yüklenir yüklenmez (loadData'yı beklemeden) seviyeyi göster.
+function updateLevelDisplay() {
+    // getCurrentGlobalLevel utility.js'den gelir
+    const currentLevel = getCurrentGlobalLevel(); 
+    const levelDisplay = document.getElementById('current-global-level');
+    if (levelDisplay) {
+        levelDisplay.textContent = currentLevel;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // BURADA HEMEN GÖSTERİMİ YAP
+    updateLevelDisplay(); 
+
     loadData().then(data => {
         if (data) {
             window.allData = data;
             
-            // YENİ: Başlangıçta sadece mevcut seviyedeki öğeleri çek
             filterAndShuffleItems(); 
             
-            // YENİ EKLENEN KISIM: MEVCUT SEVİYEYİ HTML'e yaz
-            const currentLevel = getCurrentGlobalLevel();
-            const levelDisplay = document.getElementById('current-global-level');
-            if (levelDisplay) {
-                levelDisplay.textContent = currentLevel;
-            }
+            // Veri yüklendikten sonra bir daha göster, garanti olsun
+            updateLevelDisplay();
             
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 initializeSpeechRecognition();
@@ -169,6 +177,9 @@ function processSpeechResult(result) {
     if (successfulMatches > 0) { 
         // YENİ: utility.js'deki fonksiyon ile skoru kaydet ve seviye atlamayı kontrol et
         updateGameScore('telaffuz', true); 
+        
+        // Seviye atlamış olabilir, ekranı güncelle
+        updateLevelDisplay();
         
         document.getElementById('feedback').textContent = "✅ Mükemmel! Telaffuzunuz başarılıydı. Tebrikler!";
         document.getElementById('feedback').style.color = 'var(--success-green)';
