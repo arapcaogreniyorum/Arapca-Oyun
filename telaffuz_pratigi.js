@@ -1,21 +1,25 @@
 // telaffuz_pratigi.js - Telaffuz Pratiği Oyunu (Web Speech API ile - Son Versiyon)
 
-let items = []; // Kelime ve cümlelerin birleşimi
+let items = []; // Kelime ve cümlelerin birleşimi (Mevcut Seviyeye Göre Filtrelenmiş)
 let currentItem = null;
-let correctScore = 0;
-let retryScore = 0;
+let retryScore = 0; // Doğru skor artık Local Storage'dan yönetilecek
 let recognition = null; // Konuşma tanıma objesi
 
 document.addEventListener('DOMContentLoaded', () => {
     loadData().then(data => {
         if (data) {
             window.allData = data;
-            items = [...data.kelimeler, ...data.cumleler];
-            shuffle(items);
+            
+            // YENİ: Başlangıçta sadece mevcut seviyedeki öğeleri çek
+            filterAndShuffleItems(); 
             
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 initializeSpeechRecognition();
                 setupListeners();
+                
+                // Başlangıç skorlarını Local Storage'dan yükle
+                document.getElementById('correct-score-speech').textContent = getGameScore('telaffuz');
+                
                 nextItem();
             } else {
                 document.getElementById('feedback').textContent = "⚠️ Üzgünüz! Tarayıcınız Konuşma Tanıma özelliğini desteklemiyor (Chrome/Edge önerilir).";
@@ -24,6 +28,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// YENİ FONKSİYON: Veriyi mevcut seviyeye göre filtreler ve karıştırır
+function filterAndShuffleItems() {
+    // getCurrentGlobalLevel utility.js'den gelir
+    const currentLevel = getCurrentGlobalLevel(); 
+    
+    // Sadece kullanıcının mevcut seviyesine kadar olan verileri filtrele
+    const filteredKelimeler = window.allData.kelimeler.filter(item => item.seviye <= currentLevel);
+    const filteredCumleler = window.allData.cumleler.filter(item => item.seviye <= currentLevel);
+    
+    // Filtrelenmiş kelime ve cümleleri birleştir ve karıştır
+    items = [...filteredKelimeler, ...filteredCumleler];
+    shuffle(items);
+    
+    if (items.length === 0) {
+        document.getElementById('feedback').textContent = "👏 Tebrikler! Bu seviyedeki tüm kelimeleri bitirdiniz. Yeni seviyeye geçmek için diğer oyunları da oynamayı deneyin!";
+    }
+}
 
 function initializeSpeechRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -55,8 +77,12 @@ function setupListeners() {
 
 function nextItem() {
     if (items.length === 0) {
-        endGame();
-        return;
+        // Tüm seviye kelimeleri bittiyse, listeyi tekrar yükle ve karıştır.
+        filterAndShuffleItems();
+        if (items.length === 0) {
+             endGame(); // Hala sıfırsa oyunu bitir (Bu, data.js'te veri eksikliği anlamına gelebilir)
+             return;
+        }
     }
 
     currentItem = items.pop();
@@ -106,21 +132,16 @@ function processSpeechResult(result) {
     
     // Eğer beklenen tek bir kelimeyse:
     if (modelWords.length === 1) {
-        // En güvenilir kontrol: Normalleştirilmiş sonuç, modeli içeriyor mu?
-        // Bu, "سياره سياره" gibi hatalı tekrarları dahi doğru sayar.
         const perfectMatch = normalizedResult.includes(normalizedModel);
-        
         if (perfectMatch) {
             successfulMatches = 1; 
         }
     
     // Eğer beklenen birden fazla kelimeden oluşan bir cümle ise:
     } else {
-        // Her bir model kelimesi için, sonuçtaki kelimelerde bir eşleşme arayalım
         const matchedIndices = new Set();
         
         modelWords.forEach(mWord => {
-            // Sonuç kelimeleri içinde eşleşen kelimeyi bul (aynı kelimeyi iki kez eşleştirmemek için Set kullanılıyor)
             const resultIndex = resultWords.findIndex((rWord, index) => 
                 !matchedIndices.has(index) && (rWord === mWord || rWord.includes(mWord) || mWord.includes(rWord))
             );
@@ -133,13 +154,15 @@ function processSpeechResult(result) {
         
         // Eşleşme sayısını, model kelime sayısının en az %60'ı olmalıdır.
         if (successfulMatches < modelWords.length * 0.6) {
-            successfulMatches = 0; // %60 eşleşmezse, başarısız say
+            successfulMatches = 0;
         }
     }
     // --- KRİTİK VE SIKI EŞLEŞTİRME DÜZELTMESİ SONU ---
 
     if (successfulMatches > 0) { 
-        correctScore++;
+        // YENİ: utility.js'deki fonksiyon ile skoru kaydet ve seviye atlamayı kontrol et
+        updateGameScore('telaffuz', true); 
+        
         document.getElementById('feedback').textContent = "✅ Mükemmel! Telaffuzunuz başarılıydı. Tebrikler!";
         document.getElementById('feedback').style.color = 'var(--success-green)';
         
@@ -161,7 +184,8 @@ function processSpeechResult(result) {
         }, 3000);
     }
 
-    document.getElementById('correct-score-speech').textContent = correctScore;
+    // YENİ: correctScore artık Local Storage'dan çekiliyor
+    document.getElementById('correct-score-speech').textContent = getGameScore('telaffuz');
     document.getElementById('retry-score-speech').textContent = retryScore;
 }
 
@@ -170,7 +194,7 @@ function endGame() {
     
     container.innerHTML = `
         <h2>Oyun Bitti!</h2>
-        <p>Başarılı Okuma Sayısı: ${correctScore}</p>
+        <p>Başarılı Okuma Sayısı: ${getGameScore('telaffuz')}</p>
         <p>Tekrar Deneme Sayısı: ${retryScore}</p>
         <button id="restart-button" class="type-button" style="background-color: var(--primary-blue);">Baştan Başla (Tekrar Oyna)</button>
     `;
@@ -182,18 +206,15 @@ function endGame() {
 }
 
 function restartGame() {
-    correctScore = 0;
     retryScore = 0;
+    // correctScore sıfırlanmıyor, çünkü Local Storage'dan seviye skorunu koruyoruz.
     
-    // Verileri karıştırıp oyunu yeniden başlat
-    shuffle(window.allData.kelimeler);
-    shuffle(window.allData.cumleler);
-    items = [...window.allData.kelimeler, ...window.allData.cumleler];
-    shuffle(items);
+    // YENİ: Verileri tekrar filtreleyip karıştır
+    filterAndShuffleItems();
     
     const container = document.querySelector('.speech-game-container');
     container.innerHTML = `<div class="score-board">
-        Başarılı: <span id="correct-score-speech">0</span> | Tekrar Dene: <span id="retry-score-speech">0</span>
+        Başarılı: <span id="correct-score-speech">${getGameScore('telaffuz')}</span> | Tekrar Dene: <span id="retry-score-speech">0</span>
     </div>
 
     <div id="word-to-read">Yükleniyor...</div>
